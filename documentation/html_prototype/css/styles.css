@@ -1,0 +1,185 @@
+:root {
+    --font-size: 16px;
+
+    --color-background: #fff;
+    --color-text-primary: #1e1e1e;
+    --color-text-secondary: #313131;
+
+    --font-money-pos: hsl(147, 75%, 38%);
+    --font-money-neg: hsl(2, 100%, 50%);
+
+    --bs-red: #DC3545;
+    --bs-green: #26923f;
+    --bs-blue: #007BFF;
+}
+
+/* Basic resets */
+body, html  { padding: 0; margin: 0; }
+body        { height: 100vh; font-size: var(--font-size); font-family: 'Open Sans'; }
+button      { font-family: inherit; font-size: inherit; }
+button:hover { cursor: pointer; }
+hr { border: none; border-top: 1px solid black; margin: 0; }
+label { user-select: none; }
+
+
+/* Fonts */
+@font-face { font-family: "Open Sans"; src: url(Open_Sans/OpenSans-Regular.ttf); }
+@font-face { font-family: "Open Sans"; src: url(Open_Sans/OpenSans-Bold.ttf); font-weight: 700; }
+@font-face { font-family: "Open Sans"; src: url(Open_Sans/OpenSans-ExtraBold.ttf); font-weight: 900; }
+
+.fs-title   { font-size: 1.2em; }
+.fs-text    { font-size: 1em;   }
+.fs3-small  { font-size: 0.8em; }
+
+.bold       { font-weight: 700; }
+.extrabold  { font-weight: 900; }
+
+/* ------------------------------------ */
+
+.money-pos {
+    color: var(--font-money-pos);
+}
+
+.money-neg {
+    color: var(--font-money-neg);
+}
+
+.button-pos {
+    color: var(--bs-green);
+    border: 1px solid var(--bs-green);
+    border-radius: 12px;
+    background-color: var(--color-background);
+    transition: .2s;
+    padding: 2px 8px;
+}
+
+.button-pos:hover {
+    color: var(--color-background);
+    background-color: var(--bs-green);
+    transition: .2s;
+}
+
+.button-neg {
+    color: var(--bs-red);
+    border: 1px solid var(--bs-red);
+    border-radius: 12px;
+    background-color: var(--color-background);
+    transition: .2s;
+    padding: 2px 8px;
+}
+
+.button-neg:hover {
+    color: var(--color-background);
+    background-color: var(--bs-red);
+    transition: .2s;
+}
+
+body {
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    display: flex;
+    flex-direction: column;
+}
+
+#header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid black;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+#logo {
+    font-weight: 700;
+    font-size: 1.5em;
+
+    text-align: center;
+    vertical-align: center;
+
+    width: 45px;
+    height: 45px;
+    line-height: 45px;
+    
+    border: 1px solid black;
+    border-radius: 12px;
+
+    cursor: pointer;
+}
+
+#header-items {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+}
+
+/* ----------------------------- */
+
+#content {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    gap: 10px;
+    margin: 0 10px;
+}
+
+#content-leftcol {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+    text-align: center;
+}
+
+#content-rightcol {
+    flex: 1;
+    text-align: center;
+}
+
+#leftcol-header {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+#total-money {
+    font-size: 1.5em;
+}
+
+
+#leftcol-content {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: 10px;
+}
+
+#btn-filters {
+    width: 100%;
+    max-width: 400px;
+}
+
+#btn-filters > h3 {
+    padding: 5px 0;
+    border: 1px solid var(--bs-blue);
+    color: var(--bs-blue);
+    transition: .2s;
+}
+
+#btn-filters > h3:hover {
+    cursor: pointer;
+    background-color: var(--bs-blue);
+    color: var(--color-background);
+    transition: .2s;
+}
+
+#btn-filters > form {
+    padding: 10px;
+    border: 1px solid var(--bs-blue);
+    text-align: left;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
