@@ -121,8 +121,9 @@ body {
     display: flex;
     flex-direction: row;
     flex: 1;
-    gap: 10px;
-    margin: 0 10px;
+    gap: 40px;
+    margin: 0 20px;
+    padding-bottom: 20px;
 }
 
 #content-leftcol {
@@ -136,8 +137,8 @@ body {
 }
 
 #content-rightcol {
+    width: 100%;
     flex: 1;
-    text-align: center;
 }
 
 #leftcol-header {
@@ -228,4 +229,40 @@ body {
 .operation-value[data-type="neg"] {
     color: var(--bs-red);
     font-weight: bold;
+}
+
+/* -------------- Charts -------------- */
+
+#content-rightcol {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+}
+
+#content-rightcol .chartlabel {
+    text-align: left;
+    font-weight: bold;
+    color: rgb(61, 61, 61);
+}
+
+#wrapper-total-budget-pie {
+    width: 100%;
+    max-width: 450px;
+}
+
+#wrapper-balance-history-chart,
+#wrapper-latest-incomes-chart,
+#wrapper-latest-expenses-chart {
+    width: 90%;
+    max-width: 450px;
+}
+
+#balance-history-chart,
+#latest-incomes-chart,
+#latest-expenses-chart {
+    border: 2px solid rgb(170, 170, 170);
+    padding: 15px 0px 0px 0px;
+    border-radius: 8px;
 }

@@ -17,6 +17,7 @@
     <script src="js/moment.min.js"></script>
     <script src="js/daterangepicker.min.js"></script>
     <script src="js/sweetalert.min.js"></script>
+    <script src="js/chart.js"></script>
 </head>
 <body>
     <div id="header">
@@ -32,7 +33,7 @@
         <div id="content-leftcol">
             <div id="leftcol-header">
                 <div id="total-money" class="bold">
-                    <span>Total:</span>
+                    <span>Balance:</span>
                     <span id="total-money-value">???</span>
                 </div>                
                 <button class="button-pos">Add income</button>
@@ -187,7 +188,24 @@
         </div>
 
         <div id="content-rightcol">
-            <span>hihi</span>
+            <div id="wrapper-total-budget-pie">
+                <canvas id="total-budget-pie"></canvas>
+            </div>
+
+            <div id="wrapper-balance-history-chart">
+                <div class="chartlabel fs-title">Balance history</div>
+                <canvas id="balance-history-chart"></canvas>
+            </div>
+
+            <div id="wrapper-latest-incomes-chart">
+                <div class="chartlabel fs-title">Latest incomes</div>
+                <canvas id="latest-incomes-chart"></canvas>
+            </div>
+            
+            <div id="wrapper-latest-expenses-chart">
+                <div class="chartlabel fs-title">Latest expenses</div>
+                <canvas id="latest-expenses-chart"></canvas>
+            </div>
         </div>
     </div>
 
