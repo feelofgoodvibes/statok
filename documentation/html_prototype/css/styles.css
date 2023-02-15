@@ -1,8 +1,8 @@
 :root {
     --font-size: 16px;
 
-    --color-background: #fff;
-    --color-text-primary: #1e1e1e;
+    --color-background: #ffffff;
+    --color-text-primary: #414141;
     --color-text-secondary: #313131;
 
     --font-money-pos: hsl(147, 75%, 38%);
@@ -11,6 +11,7 @@
     --bs-red: #DC3545;
     --bs-green: #26923f;
     --bs-blue: #007BFF;
+    --bs-yellow: #FFC107;
 }
 
 /* Basic resets */
@@ -130,6 +131,8 @@ body {
     gap: 10px;
     flex: 1;
     text-align: center;
+    max-width: 700px;
+    min-width: 550px;
 }
 
 #content-rightcol {
@@ -157,7 +160,6 @@ body {
 
 #btn-filters {
     width: 100%;
-    max-width: 400px;
 }
 
 #btn-filters > h3 {
@@ -182,4 +184,48 @@ body {
     display: flex;
     flex-direction: column;
     gap: 10px;
+}
+
+/* opertaions list */
+.operations-list {
+    display: table;
+    width: 100%;
+}
+
+.operation-item {
+    display: table-row;
+}
+
+.operation-item .operation-cell {
+    display: table-cell;
+    padding: 10px 0;
+    border-bottom: 1px solid rgb(236, 236, 236);
+    vertical-align: middle;
+}
+
+.operation-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    justify-content: end;
+}
+
+.operation-btn-edit, .operation-btn-delete {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 2px;
+}
+
+.operation-btn-edit { color: var(--bs-yellow); }
+.operation-btn-delete { color: var(--bs-red); }
+
+.operation-value[data-type="pos"] {
+    color: var(--bs-green);
+    font-weight: bold;
+}
+
+.operation-value[data-type="neg"] {
+    color: var(--bs-red);
+    font-weight: bold;
 }
