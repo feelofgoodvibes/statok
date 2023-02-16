@@ -1,9 +1,10 @@
 :root {
-    --font-size: 16px;
+    --font-size: 14px;
 
     --color-background: #ffffff;
     --color-text-primary: #414141;
     --color-text-secondary: #313131;
+    --color-text-a: #5c75c9;
 
     --font-money-pos: hsl(147, 75%, 38%);
     --font-money-neg: hsl(2, 100%, 50%);
@@ -16,11 +17,13 @@
 
 /* Basic resets */
 body, html  { padding: 0; margin: 0; }
-body        { height: 100vh; font-size: var(--font-size); font-family: 'Open Sans'; }
+body        { height: 100vh; font-size: var(--font-size); }
+body, body * { font-family: 'Open Sans'; }
 button      { font-family: inherit; font-size: inherit; }
 button:hover { cursor: pointer; }
 hr { border: none; border-top: 1px solid black; margin: 0; }
 label { user-select: none; }
+a { text-decoration: none; color: var(--color-text-a); }
 
 
 /* Fonts */
@@ -265,4 +268,38 @@ body {
     border: 2px solid rgb(170, 170, 170);
     padding: 15px 0px 0px 0px;
     border-radius: 8px;
+}
+
+
+/* ---------- operation page styles ---------- */
+
+#operation-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.fieldsform {
+    display: table;
+    border-spacing: 10px 8px;
+}
+
+.fieldsform-row {
+    display: table-row;
+}
+
+.fieldsform-row > * {
+    display: table-cell;
+}
+
+.fieldsform-row > button {
+    display: block;
+    width: 100%;
+}
+
+.fieldsform-buttons {
+    gap: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
 }

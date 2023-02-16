@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statok</title>
+    <link rel="icon" href="css/logo.svg">
+
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/jquery-ui.min.css">
+    <link rel="stylesheet" href="css/daterangepicker.css">
+
+    <script src="js/scripts-operation.js"></script>
+    <script src="js/jquery-3.6.3.min.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
+    <script src="js/moment.min.js"></script>
+    <script src="js/daterangepicker.min.js"></script>
+    <script src="js/sweetalert.min.js"></script>
+    <script src="js/chart.js"></script>
+</head>
+<body>
+    <div id="header">
+        <div id="logo">S</div>
+        <div id="header-items">
+            <a id="header-operations" class="extrabold" href="index.html">Operations</a>
+            <a id="header-categories" href="categories.html">Categories</a>
+        </div>
+        <div></div>
+    </div>
+
+    <div id="operation-content">
+        <div class="fs-title extrabold">Operation №3</div>
+        <div>
+            <div class="fieldsform">
+                <div class="fieldsform-row">
+                    <label>Value</label>
+                    <input value="10.00" name="value" class="bold">
+                </div>
+                <div class="fieldsform-row">
+                    <label>Date</label>
+                    <input name="datesingle">
+                </div>
+                <div class="fieldsform-row">
+                    <label>Category</label>
+                    <select>
+                        <option value="food">Food</option>
+                        <option value="food">Restaurant</option>
+                        <option value="food">Transaction</option>
+                        <option value="food">Store</option>
+                        <option value="food">Taxi</option>
+                    </select>
+                </div>
+            </div>
+            <div class="fieldsform-buttons">
+                <button class="button-pos">Save</button>
+                <button class="button-neg">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var operations_data = [
+            { id: 1, value: 100.00, datetime: "11.02.2023 12:24", category: "Salary" },
+            { id: 2, value: 15.00, datetime: "11.02.2023 20:15", category: "Transaction" },
+            { id: 3, value: -1.56, datetime: "12.02.2023 12:10", category: "Food" },
+            { id: 4, value: -15.00, datetime: "12.02.2023 20:33", category: "Restaurant" },
+            { id: 5, value: 4.00, datetime: "15.02.2023 03:26", category: "Transaction" }]
+    </script>
+</body>
+</html>

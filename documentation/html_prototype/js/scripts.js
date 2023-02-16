@@ -1,9 +1,5 @@
 window.addEventListener("load", () => {
-    let logoel = document.getElementById("logo");
-
-    if (logoel){
-        logoel.addEventListener("click", () => { location.href = "./index.html"; })
-    }
+    if (document.getElementById("logo")) { document.getElementById("logo").addEventListener("click", () => { location.href = "./index.html"; }) }
 
     $("#btn-filters").accordion({
         active: false,
@@ -205,4 +201,8 @@ function renderCharts() {
             responsive: true
         }
     });
+}
+
+function operationEdit(el){
+    location.href = "operation.html";
 }
