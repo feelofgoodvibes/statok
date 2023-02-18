@@ -52,7 +52,7 @@ function formClick() {
 function delF(element) {
     console.log(element);
 
-    swal({
+    Swal.fire({
             text: "Are you sure you want to delete this item?",
             buttons: ["Cancel", "Yes"],
             icon: "warning",

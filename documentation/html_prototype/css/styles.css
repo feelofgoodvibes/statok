@@ -290,6 +290,7 @@ body {
 
 .fieldsform-row > * {
     display: table-cell;
+    width: -webkit-fill-available;
 }
 
 .fieldsform-row > button {
