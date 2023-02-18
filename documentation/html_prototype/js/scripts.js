@@ -231,3 +231,23 @@ function add_operation(type) {
         }
     })
 }
+
+function add_category(type) {
+    Swal.fire({
+        title: "Add " + type + " category",
+        input: "text",
+        inputPlaceholder: "Name of the category",
+        showCancelButton: true,
+        confirmButtonText: "Add",
+        confirmButtonColor: "#26923f"
+    }).then((result) => {
+        if (result.isConfirmed){
+            Swal.fire({
+                title: "Category added!",
+                icon: "success",
+                confirmButtonColor: "#26923f"
+
+            }).then(() => { location = "categories.html"; });
+        }
+    });
+}

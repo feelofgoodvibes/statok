@@ -309,3 +309,78 @@ body {
     flex-direction: column;
     align-items: stretch;
 }
+
+#categories-header {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    margin-left: 10px;
+}
+
+#categories-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.categories-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 250px;
+
+    background-color: rgba(255, 0, 0, 0.23);
+    border: 1px solid rgba(255, 0, 0, 0.4);
+    border-radius: 20px;
+    padding: 8px;
+    transition: .2s;
+    backdrop-filter: blur(10px);
+}
+
+#income-categories-list > .categories-item {
+    background-color: rgba(51, 200, 51, 0.23);
+    border-color: rgba(51, 200, 51, 0.4);
+    color: rgb(4, 121, 4);
+}
+
+#expense-categories-list > .categories-item {
+    background-color: rgba(255, 0, 0, 0.23);
+    border-color: rgba(255, 0, 0, 0.4);
+    color: rgb(121, 0, 0);
+}
+
+#income-categories-list > .categories-item > .categories-item-name > a {
+    color: rgb(4, 121, 4);
+}
+
+#expense-categories-list > .categories-item > .categories-item-name > a {
+    color: rgb(121, 0, 0);
+}
+
+#income-categories-list,
+#expense-categories-list {
+    margin: 0 10px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.categories-item-name {
+    font-size: 1.3em;
+    font-weight: 600;
+}
+
+.categories-item:hover {
+    transform: scale(1.1) rotate(-3deg);
+    transition: .2s;
+    z-index: 1000;
+}
+
+#expense-categories-list > .categories-item:hover {
+    box-shadow: 0 0 10px 1px rgba(238, 0, 0, 0.4);
+}
+
+#income-categories-list > .categories-item:hover {
+    box-shadow: 0 0 10px 1px rgba(0, 238, 20, 0.4);
+}

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statok</title>
+    <link rel="icon" href="css/logo.svg">
+
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/jquery-ui.min.css">
+    <link rel="stylesheet" href="css/daterangepicker.css">
+
+    <script src="js/scripts.js"></script>
+    <script src="js/jquery-3.6.3.min.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
+    <script src="js/moment.min.js"></script>
+    <script src="js/daterangepicker.min.js"></script>
+    <script src="js/sweetalert2.js"></script>
+    <script src="js/chart.js"></script>
+</head>
+<body>
+    <div id="header">
+        <div id="logo">S</div>
+        <div id="header-items">
+            <a id="header-operations" href="index.html">Operations</a>
+            <a id="header-categories" class="extrabold" href="categories.html">Categories</a>
+        </div>
+        <div></div>
+    </div>
+
+    <div id="categories-content">
+        <div id="categories-header">
+            <span class="fs-title bold">Categories</span>
+            <button class="button-pos" onclick="add_category('income')">Add income category</button>
+            <button class="button-neg" onclick="add_category('expense')">Add expense category</button>
+        </div>
+
+        <div id="income-categories-list">
+            <div class="categories-item category-pos">
+                <span class="categories-item-name"><a href="category.html">Salary</a></span>
+                <span class="categories-item-amount">Operations: 12</span>
+                <span class="categories-item-total">Total: $100.21</span>
+            </div>
+            <div class="categories-item category-pos">
+                <span class="categories-item-name"><a href="category.html">Transaction</a></span>
+                <span class="categories-item-amount">Operations: 2</span>
+                <span class="categories-item-total">Total: $25.21</span>
+            </div>
+        </div>
+
+        <div id="expense-categories-list">
+            <div class="categories-item category-pos">
+                <span class="categories-item-name"><a href="category.html">Food</a></span>
+                <span class="categories-item-amount">Operations: 2</span>
+                <span class="categories-item-total">Total: $25.21</span>
+            </div>
+            <div class="categories-item category-pos">
+                <span class="categories-item-name"><a href="category.html">Transaction</a></span>
+                <span class="categories-item-amount">Operations: 8</span>
+                <span class="categories-item-total">Total: $100.12</span>
+            </div>
+            <div class="categories-item category-pos">
+                <span class="categories-item-name"><a href="category.html">Taxi</a></span>
+                <span class="categories-item-amount">Operations: 12</span>
+                <span class="categories-item-total">Total: $35.00</span>
+            </div>
+            <div class="categories-item category-pos">
+                <span class="categories-item-name"><a href="category.html">Restaurant</a></span>
+                <span class="categories-item-amount">Operations: 2</span>
+                <span class="categories-item-total">Total: $75.18</span>
+            </div>
+            <div class="categories-item category-pos">
+                <span class="categories-item-name"><a href="category.html">Store</a></span>
+                <span class="categories-item-amount">Operations: 22</span>
+                <span class="categories-item-total">Total: $205.2</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
