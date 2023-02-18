@@ -49,15 +49,20 @@ function formClick() {
     console.log($("#filter-daterange").val());
 }
 
-function delF(element) {
-    console.log(element);
-
+function delete_operation(element) {
     Swal.fire({
-            text: "Are you sure you want to delete this item?",
-            buttons: ["Cancel", "Yes"],
-            icon: "warning",
-            dangerMode: true
-        });
+        title: "Delete operation",
+        text: "Are you sure you want to delete this operation?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DC3545",
+        confirmButtonText: "Yes, delete",
+        cancelButtonColor: "#414141"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            location.href='index.html'
+        }
+    });
 }
 
 function renderCharts() {
@@ -203,6 +208,26 @@ function renderCharts() {
     });
 }
 
-function operationEdit(el){
+function operationEdit(el) {
     location.href = "operation.html";
+}
+
+function add_operation(type) {
+    Swal.fire({
+        title: "Add " + type + " operation",
+        text: "Enter operation value",
+        html: 
+            '<input id="swal-input-value" class="swal2-input" placeholder="Value">' +
+            '<select id="swal-select-category" class="swal2-input"></select>',
+        showCancelButton: true,
+        confirmButtonText: "Add",
+        confirmButtonColor: "#26923f",
+        willOpen: () => {
+            $("#swal-select-category")[0].appendChild($("<option>", {"text": "Food", "value": "Food"})[0]);
+            $("#swal-select-category")[0].appendChild($("<option>", {"text": "Restaurant", "value": "Restaurant"})[0]);
+            $("#swal-select-category")[0].appendChild($("<option>", {"text": "Transaction", "value": "Transaction"})[0]);
+            $("#swal-select-category")[0].appendChild($("<option>", {"text": "Store", "value": "Store"})[0]);
+            $("#swal-select-category")[0].appendChild($("<option>", {"text": "Taxi", "value": "Taxi"})[0]);
+        }
+    })
 }

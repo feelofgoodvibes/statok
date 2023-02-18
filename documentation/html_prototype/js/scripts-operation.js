@@ -34,3 +34,31 @@ window.addEventListener("load", () => {
         }
     });
 });
+
+function oppage_delete() {
+    Swal.fire({
+        title: "Delete operation",
+        text: "Are you sure you want to delete this operation?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DC3545",
+        confirmButtonText: "Yes, delete",
+        cancelButtonColor: "#414141"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            location.href='index.html'
+        }
+    });
+}
+
+function oppage_save() {
+    Swal.fire({
+        title: "Save operation",
+        text: "Operation information successfully updated!",
+        icon: "success",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            location.href='index.html'
+        }
+    });
+}
