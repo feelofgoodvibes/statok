@@ -8,3 +8,6 @@ install:
 script:
   - coverage run -m unittest
   - pylint statok_app
+
+after_script:
+  - coveralls
