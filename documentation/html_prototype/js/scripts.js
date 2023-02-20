@@ -229,7 +229,15 @@ function add_operation(type) {
             $("#swal-select-category")[0].appendChild($("<option>", {"text": "Store", "value": "Store"})[0]);
             $("#swal-select-category")[0].appendChild($("<option>", {"text": "Taxi", "value": "Taxi"})[0]);
         }
-    })
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: "Operation added successfully!",
+                icon: "success",
+                confirmButtonColor: "#26923f",
+            })
+        }
+    });
 }
 
 function add_category(type) {
