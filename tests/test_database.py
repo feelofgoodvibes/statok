@@ -67,5 +67,8 @@ def test_db_get_current_time():
     time = get_current_time()
     time_now = datetime.now(tz=pytz.timezone("Europe/Kyiv"))
 
-    assert time.time() == time_now.time()
-    assert time.date() == time_now.date()
+    assert time.hour() == time_now.hour()
+    assert time.minute() == time_now.minute()
+    assert time.year() == time_now.year()
+    assert time.month() == time_now.month()
+    assert time.day() == time_now.day()
