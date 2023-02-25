@@ -1,7 +1,7 @@
 import enum
 from sqlalchemy import Column, Integer, String, Enum
 from sqlalchemy.orm import relationship
-from .database import Base
+from .database import db
 
 
 class CategoryType(enum.Enum):
@@ -17,7 +17,7 @@ class CategoryType(enum.Enum):
     EXPENSE = 2
 
 
-class Category(Base):
+class Category(db.Model):
     """Model which describes category
 
     Init fields

@@ -425,7 +425,8 @@ disable=raw-checker-failed,
 
         missing-module-docstring,
         relative-beyond-top-level,
-        too-few-public-methods
+        too-few-public-methods,
+        unused-import
 
 
 # Enable the message, report, category or checker with the given id(s). You can

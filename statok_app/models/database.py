@@ -1,5 +1,3 @@
-from sqlalchemy import MetaData
-from sqlalchemy.orm import declarative_base
+from flask_sqlalchemy import SQLAlchemy
 
-metadata = MetaData()
-Base = declarative_base(metadata=metadata)
+db = SQLAlchemy()

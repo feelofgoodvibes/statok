@@ -2,16 +2,16 @@ from datetime import datetime
 import pytz
 from sqlalchemy import Column, Integer, Numeric, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
-from .database import Base
+from .database import db
 
 
-def get_current_time():
+def get_current_time() -> datetime:
     """Get current time without tzinfo"""
 
     return datetime.now(tz=pytz.timezone("Europe/Kyiv")).replace(tzinfo=None)
 
 
-class Operation(Base):
+class Operation(db.Model):
     """Model which describes operation
 
     Init fields

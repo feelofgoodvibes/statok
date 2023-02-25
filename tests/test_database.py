@@ -3,60 +3,54 @@ from datetime import datetime
 import pytz
 
 import pytest
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
+from flask_sqlalchemy import SQLAlchemy
 
-from statok_app.models.database import Base
+from statok_app.models.database import db
 from statok_app.models.category import Category, CategoryType
 from statok_app.models.operation import Operation, get_current_time
+from statok_app.app import create_test_app
 
 
 MYSQL_USER = os.environ.get("MYSQL_USER")
 MYSQL_PASS = os.environ.get("MYSQL_PASS")
-DB_NAME = "statok_test"
+MYSQL_DBNAME = "statok_test"
 
 @pytest.fixture
-def database_session() -> Session:
-    engine = create_engine(f"mysql+mysqlconnector://{MYSQL_USER}:{MYSQL_PASS}@localhost/{DB_NAME}")
-    Base.metadata.drop_all(bind=engine)
+def test_db() -> SQLAlchemy:
+    test_app = create_test_app()
+    test_app.config["TESTING"] = True
 
-    print("Creating all tables")
-    Base.metadata.create_all(bind=engine)
-    session_maker = sessionmaker(bind=engine)
-    session = session_maker()
-
-    yield session
-
-    print("Rollback session")
-    session.rollback()
-    print("Dropping all tables")
-    Base.metadata.drop_all(bind=engine)
+    with test_app.app_context():
+        db.create_all()
+        yield db
+        db.session.remove()
+        db.drop_all()
 
 
-def test_db_insert_category(database_session: Session):
+def test_db_insert_category(test_db: SQLAlchemy):
     new_category = Category(name="Test", type=CategoryType.INCOME)
 
-    database_session.add(new_category)
-    database_session.commit()
+    test_db.session.add(new_category)
+    test_db.session.commit()
 
-    query_obj = database_session.query(Category).first()
+    query_obj = test_db.session.query(Category).first()
 
     assert query_obj.name == "Test"
     assert query_obj.type == CategoryType.INCOME
 
 
-def test_db_insert_operation(database_session: Session):
+def test_db_insert_operation(test_db: SQLAlchemy):
     new_category = Category(name="Test", type=CategoryType.INCOME)
 
-    database_session.add(new_category)
-    database_session.commit()
+    test_db.session.add(new_category)
+    test_db.session.commit()
 
     new_operation = Operation(value=42, category_id=new_category.id)
 
-    database_session.add(new_operation)
-    database_session.commit()
+    test_db.session.add(new_operation)
+    test_db.session.commit()
 
-    query_obj = database_session.query(Operation).first()
+    query_obj = test_db.session.query(Operation).first()
 
     assert query_obj.id == 1
     assert query_obj.value == 42
