@@ -1,12 +1,24 @@
 language: python
+
 python:
   - "3.9"
 
 install:
   - pip install -r requirements.txt
 
+env:
+  global:
+    - MYSQL_USER=root
+    - MYSQL_PASS=""
+
+services:
+  - mysql
+
+before_install:
+  - mysql -e 'CREATE DATABASE statok_test;'
+
 script:
-  - coverage run -m unittest
+  - coverage run -m pytest tests
   - pylint statok_app
 
 after_script:
