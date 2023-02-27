@@ -47,6 +47,7 @@ def dummy_db() -> SQLAlchemy:
             Category(name="Transaction", type=CategoryType.INCOME),
             Category(name="Food", type=CategoryType.EXPENSE),
             Category(name="Transaction", type=CategoryType.EXPENSE),
+            Category(name="Books", type=CategoryType.EXPENSE),
         ])
 
         db.session.commit()
