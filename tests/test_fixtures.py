@@ -52,14 +52,14 @@ def dummy_db() -> SQLAlchemy:
         db.session.commit()
 
         db.session.add_all([
-            Operation(value=100, category_id=3),
-            Operation(value=50, category_id=1),
-            Operation(value=75, category_id=1),
-            Operation(value=250, category_id=4),
-            Operation(value=15, category_id=5),
-            Operation(value=75, category_id=6),
-            Operation(value=5, category_id=6),
-            Operation(value=10, category_id=2)
+            Operation(value=100, category_id=3, date='2023-02-20 12:00:00'),
+            Operation(value=50, category_id=1, date='2023-02-20 13:00:00'),
+            Operation(value=75, category_id=1, date='2023-02-20 14:00:00'),
+            Operation(value=250, category_id=4, date='2023-02-20 15:00:00'),
+            Operation(value=15, category_id=5, date='2023-02-20 16:00:00'),
+            Operation(value=75, category_id=6, date='2023-02-20 17:00:00'),
+            Operation(value=5, category_id=6, date='2023-02-20 18:00:00'),
+            Operation(value=10, category_id=2, date='2023-02-20 19:00:00')
         ])
 
         yield db
