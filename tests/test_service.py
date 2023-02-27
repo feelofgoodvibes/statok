@@ -7,8 +7,7 @@ from statok_app.service import operation as service_operation
 from statok_app.models.category import Category, CategoryType
 from statok_app.models.operation import Operation
 
-from test_fixtures import dummy_db
-
+from tests.fixtures import dummy_db
 
 # ------------ Category tests ------------
 
@@ -27,6 +26,10 @@ def test_get_categories_by_type(dummy_db: SQLAlchemy):
     categories_type = service_category.get_all_categories(dummy_db, CategoryType.INCOME).all()
     assert len(categories_type) == 3
 
+
+def test_get_categories_wrong_type(dummy_db: SQLAlchemy):
+    with pytest.raises(ValueError):
+        service_category.get_all_categories(dummy_db, 5).all()
 
 def test_get_category(dummy_db: SQLAlchemy):
     category = service_category.get_category(dummy_db, 5)
