@@ -24,7 +24,7 @@ def get_category(db: SQLAlchemy, c_id: int) -> Optional[Category]:
     return db.session.query(Category).filter(Category.id==c_id).first()
 
 
-def create_category(db: SQLAlchemy, name: str, c_type: CategoryType):
+def create_category(db: SQLAlchemy, name: str, c_type: CategoryType) -> Category:
     """Create new category
 
     Params
