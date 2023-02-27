@@ -12,11 +12,6 @@ from statok_app.models.category import Category, CategoryType
 from statok_app.models.operation import Operation
 
 
-MYSQL_USER = os.environ.get("MYSQL_USER")
-MYSQL_PASS = os.environ.get("MYSQL_PASS")
-MYSQL_DBNAME = "statok_test"
-
-
 @pytest.fixture()
 def test_db() -> SQLAlchemy:
     """Clean testing database as fixture"""
