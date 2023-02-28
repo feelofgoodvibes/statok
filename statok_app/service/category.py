@@ -1,23 +1,27 @@
-from typing import Optional, Union
+from typing import Union
+from pydantic import validate_arguments
 
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from sqlalchemy.orm import Query
-from flask_sqlalchemy import SQLAlchemy
 
 from statok_app.models.category import Category, CategoryType
 from statok_app.models.operation import Operation
 from statok_app.service.operation import get_all_operations
+from statok_app.service import pydantic_config
 
 
-def get_all_categories(db: SQLAlchemy, category_type: Union[str, int, CategoryType] = None) -> Query:
-    """Get list of all categories"""
+@validate_arguments(config=pydantic_config)
+def get_all_categories(db: SQLAlchemy, category_type: CategoryType = None) -> Query:
+    """Get list of all categories
+    
+    Params
+    -------
+    - category_type : `Optional[int]`
+        * Type of the categories
+    """
 
     categories = db.session.query(Category)
-
-    if category_type is not None \
-        and (category_type not in (1, 2, 'income', 'expense') \
-             and not isinstance(category_type, CategoryType)):
-        raise ValueError("Filter category_type accepts only: \"income\" (1) \"expense\" (2) or CategoryType")
 
     if category_type is not None:
         categories = categories.filter(Category.type==category_type)
@@ -25,7 +29,8 @@ def get_all_categories(db: SQLAlchemy, category_type: Union[str, int, CategoryTy
     return categories
 
 
-def get_category(db: SQLAlchemy, c_id: int) -> Optional[Category]:
+@validate_arguments(config=pydantic_config)
+def get_category(db: SQLAlchemy, c_id: int) -> Category:
     """Get category by id
 
     Params
@@ -34,9 +39,15 @@ def get_category(db: SQLAlchemy, c_id: int) -> Optional[Category]:
         * ID of the category
     """
 
-    return db.session.query(Category).filter(Category.id==c_id).first()
+    category = db.session.query(Category).filter(Category.id==c_id).first()
+
+    if category is None:
+        raise ValueError("Category not found!")
+
+    return category
 
 
+@validate_arguments(config=pydantic_config)
 def create_category(db: SQLAlchemy, name: str, c_type: CategoryType) -> Category:
     """Create new category
 
@@ -47,10 +58,6 @@ def create_category(db: SQLAlchemy, name: str, c_type: CategoryType) -> Category
     - c_type: `CategoryType`
         * Type of new category
     """
-
-    if not isinstance(c_type, CategoryType):
-        raise ValueError("Category type should be instance of CategoryType!")
-
     if len(name) > 50:
         raise ValueError("Maximum length of category name is 50 characters!")
 
@@ -67,6 +74,7 @@ def create_category(db: SQLAlchemy, name: str, c_type: CategoryType) -> Category
     return new_category
 
 
+@validate_arguments(config=pydantic_config)
 def delete_category_operations(db: SQLAlchemy, c_id: int) -> list[Operation]:
     """Delete all operations withing category by its `id`.
 
@@ -84,6 +92,7 @@ def delete_category_operations(db: SQLAlchemy, c_id: int) -> list[Operation]:
     return deleted_operations
 
 
+@validate_arguments(config=pydantic_config)
 def delete_category(db: SQLAlchemy, c_id: int) -> Category:
     """Delete category by its `id`.
     All operation within its category will be moved to default category "Other"
@@ -95,9 +104,6 @@ def delete_category(db: SQLAlchemy, c_id: int) -> Category:
     """
 
     category = get_category(db, c_id)
-
-    if category is None:
-        raise ValueError("Category not found!")
 
     if category.name == "Other":
         raise ValueError("This category cannot be deleted!")
@@ -113,6 +119,7 @@ def delete_category(db: SQLAlchemy, c_id: int) -> Category:
     return category
 
 
+@validate_arguments(config=pydantic_config)
 def update_category(db: SQLAlchemy, c_id: int, name: str) -> Category:
     """Update category by its `id`.
 
@@ -126,9 +133,6 @@ def update_category(db: SQLAlchemy, c_id: int, name: str) -> Category:
 
     category = get_category(db, c_id)
 
-    if category is None:
-        raise ValueError("Category not found!")
-
     if category.name == "Other":
         raise ValueError("This category cannot be edited!")
 
@@ -140,6 +144,7 @@ def update_category(db: SQLAlchemy, c_id: int, name: str) -> Category:
     return category
 
 
+@validate_arguments(config=pydantic_config)
 def get_categories_stats(db: SQLAlchemy) -> dict:
     """Get statistics of all categories as dictionary.
     Statistics contains:
