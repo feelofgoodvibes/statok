@@ -184,7 +184,8 @@ good-names=i,
            k,
            ex,
            Run,
-           _
+           _,
+           db
 
 # Good variable names regexes, separated by a comma. If names match any regex,
 # they will always be accepted
@@ -330,7 +331,7 @@ indent-after-paren=4
 indent-string='    '
 
 # Maximum number of characters on a single line.
-max-line-length=100
+max-line-length=120
 
 # Maximum number of lines in a module.
 max-module-lines=1000
@@ -426,7 +427,8 @@ disable=raw-checker-failed,
         missing-module-docstring,
         relative-beyond-top-level,
         too-few-public-methods,
-        unused-import
+        unused-import,
+        not-callable
 
 
 # Enable the message, report, category or checker with the given id(s). You can
