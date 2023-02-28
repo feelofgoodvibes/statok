@@ -1,4 +1,5 @@
 from typing import Optional, Union
+
 from sqlalchemy import func
 from sqlalchemy.orm import Query
 from flask_sqlalchemy import SQLAlchemy
@@ -7,13 +8,15 @@ from statok_app.models.category import Category, CategoryType
 from statok_app.models.operation import Operation
 from statok_app.service.operation import get_all_operations
 
-# @TODO: add filter by category type
+
 def get_all_categories(db: SQLAlchemy, category_type: Union[str, int, CategoryType] = None) -> Query:
     """Get list of all categories"""
 
     categories = db.session.query(Category)
 
-    if category_type and (category_type not in (1, 2, 'income', 'expense') and not isinstance(category_type, CategoryType)):
+    if category_type is not None \
+        and (category_type not in (1, 2, 'income', 'expense') \
+             and not isinstance(category_type, CategoryType)):
         raise ValueError("Filter category_type accepts only: \"income\" (1) \"expense\" (2) or CategoryType")
 
     if category_type is not None:
