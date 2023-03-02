@@ -2,10 +2,22 @@
 
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, validator
-from statok_app.models.category import CategoryType
+from pydantic import BaseModel, validator, confloat
+from statok_app.models.category import CategoryType, Category
 
-from statok_app.schemas import json_encoders, OPERATION_DATE_FORMAT
+from statok_app.schemas import json_encoders, OPERATION_DATE_FORMAT, OPERATION_MAX_VALUE
+
+
+def date_validation(value: datetime):
+    """A validator for transforming numeric strings to int for parsing CategoryType"""
+
+    if value is None:
+        return value
+
+    try:
+        return datetime.strptime(value, OPERATION_DATE_FORMAT)
+    except Exception as exc:
+        raise ValueError("Filter date_from format should be: \"YYYY-MM-DD HH:MM:SS\"!") from exc
 
 
 class OperationBase(BaseModel):
@@ -43,23 +55,51 @@ class Operation(OperationBase):
     category: "CategoryBase"
 
 
+class OperationCreate(BaseModel):
+    """Operation schema for POST creation
+
+    Fields
+    ------
+    * value : `float`
+    * category : `Category`
+    """
+
+    value: confloat(ge=-OPERATION_MAX_VALUE, le=OPERATION_MAX_VALUE, allow_inf_nan=False)
+    category: Category
+
+    class Config:
+        arbitrary_types_allowed = True
+
+
+class OperationUpdate(BaseModel):
+    value: Optional[confloat(ge=-OPERATION_MAX_VALUE, le=OPERATION_MAX_VALUE, allow_inf_nan=False)]
+    category: Optional[Category]
+    date: Optional[str]
+
+    date_validator = validator("date", allow_reuse=True)(date_validation)
+
+    class Config:
+        arbitrary_types_allowed = True
+
+
 class OperationFilters(BaseModel):
-    """Model for parsing filter options for operation collection"""
+    """Schema for parsing filter options for operation collection"""
 
     date_from: Optional[str]
     date_to: Optional[str]
     category_id: Optional[int]
     type: Optional[CategoryType]
 
-    @validator("date_from", "date_to")
-    def date_validation(cls, value):
+    date_validator = validator("date_from", "date_to", allow_reuse=True)(date_validation)
+
+    @validator('type', pre=True)
+    def type_str_to_int(cls, value):
         """A validator for transforming numeric strings to int for parsing CategoryType"""
 
-        try:
-            return datetime.strptime(value, OPERATION_DATE_FORMAT)
-        except Exception as exc:
-            raise ValueError("Filter date_from format should be: \"YYYY-MM-DD HH:MM:SS\"!") from exc
+        if isinstance(value, str) and value.isnumeric():
+            return int(value)
 
+        return value
 
 from statok_app.schemas.category import CategoryBase
 Operation.update_forward_refs()
