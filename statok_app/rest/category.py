@@ -16,13 +16,15 @@ def api_category_all():
     if request.method == "GET":
         filter_category_type = request.args.get("type")
 
+        # Convert string to int, because pydantic.validate_arguments decorator
+        # can't convert numeric strings to Enum member
         if isinstance(filter_category_type, str) and filter_category_type.isnumeric():
             filter_category_type = int(filter_category_type)
 
         try:
             categories = service_category.get_all_categories(db, category_type=filter_category_type).all()
             response = [orjson.loads(schemas_category.CategoryBase.from_orm(category).json())
-                    for category in categories], 200
+                        for category in categories], 200
         except ValidationError as exc:
             response = { "error": orjson.loads(exc.json()) }, 400
 
@@ -32,7 +34,7 @@ def api_category_all():
         except ValidationError as exc:
             return { "error": orjson.loads(exc.json()) }, 400
 
-        new_category = service_category.create_category(db, name=category_fields.name, c_type=category_fields.type)
+        new_category = service_category.create_category(db, name=category_fields.name, category_type=category_fields.type)
         db.session.commit()
 
         response_model = schemas_category.Category.from_orm(new_category)
@@ -40,6 +42,7 @@ def api_category_all():
         response = orjson.loads(response_model.json()), 201
 
     return response
+
 
 def api_category(category_id: int):
     """View function for URL: `/category/<int: category_id>`"""
