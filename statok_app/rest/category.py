@@ -34,7 +34,9 @@ def api_category_all():
         except ValidationError as exc:
             return { "error": orjson.loads(exc.json()) }, 400
 
-        new_category = service_category.create_category(db, name=category_fields.name, category_type=category_fields.type)
+        new_category = service_category.create_category(db,
+                                                        name=category_fields.name,
+                                                        category_type=category_fields.type)
         db.session.commit()
 
         response_model = schemas_category.Category.from_orm(new_category)

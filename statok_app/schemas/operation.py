@@ -68,10 +68,14 @@ class OperationCreate(BaseModel):
     category: Category
 
     class Config:
+        """Pydantic model config"""
+
         arbitrary_types_allowed = True
 
 
 class OperationUpdate(BaseModel):
+    """Schema for parsing request arguments on operation update"""
+
     value: Optional[confloat(ge=-OPERATION_MAX_VALUE, le=OPERATION_MAX_VALUE, allow_inf_nan=False)]
     category: Optional[Category]
     date: Optional[str]
@@ -79,6 +83,8 @@ class OperationUpdate(BaseModel):
     date_validator = validator("date", allow_reuse=True)(date_validation)
 
     class Config:
+        """Pydantic model config"""
+
         arbitrary_types_allowed = True
 
 

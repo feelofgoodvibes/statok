@@ -20,13 +20,13 @@ def api_operation_all():
                         for operation in operations], 200
         except ValidationError as exc:
             response = { "error": orjson.loads(exc.json()) }, 400
-    
+
     elif request.method == "POST":
         try:
             operation_category = service_category.get_category(db, request.form.get("category"))
             operation_dict = {"value": request.form.get("value"), "category": operation_category}
             operation_fields = schemas_operation.OperationCreate.parse_obj(operation_dict)
-            
+
             new_operation = service_operation.create_operation(db,
                                                             value=operation_fields.value,
                                                             category=operation_fields.category)
