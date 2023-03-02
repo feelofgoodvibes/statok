@@ -1,5 +1,4 @@
-from typing import Union
-from pydantic import validate_arguments
+from pydantic import validate_arguments, constr
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
@@ -14,7 +13,7 @@ from statok_app.service import pydantic_config
 @validate_arguments(config=pydantic_config)
 def get_all_categories(db: SQLAlchemy, category_type: CategoryType = None) -> Query:
     """Get list of all categories
-    
+
     Params
     -------
     - category_type : `Optional[int]`
@@ -48,7 +47,7 @@ def get_category(db: SQLAlchemy, c_id: int) -> Category:
 
 
 @validate_arguments(config=pydantic_config)
-def create_category(db: SQLAlchemy, name: str, c_type: CategoryType) -> Category:
+def create_category(db: SQLAlchemy, name: constr(max_length=50), c_type: CategoryType) -> Category:
     """Create new category
 
     Params
@@ -58,8 +57,6 @@ def create_category(db: SQLAlchemy, name: str, c_type: CategoryType) -> Category
     - c_type: `CategoryType`
         * Type of new category
     """
-    if len(name) > 50:
-        raise ValueError("Maximum length of category name is 50 characters!")
 
     same_category_check = (db.session.query(Category)
                                     .filter(Category.name==name,
@@ -120,7 +117,7 @@ def delete_category(db: SQLAlchemy, c_id: int) -> Category:
 
 
 @validate_arguments(config=pydantic_config)
-def update_category(db: SQLAlchemy, c_id: int, name: str) -> Category:
+def update_category(db: SQLAlchemy, c_id: int, name: constr(max_length=50)) -> Category:
     """Update category by its `id`.
 
     Params
@@ -135,9 +132,6 @@ def update_category(db: SQLAlchemy, c_id: int, name: str) -> Category:
 
     if category.name == "Other":
         raise ValueError("This category cannot be edited!")
-
-    if len(name) > 50:
-        raise ValueError("Maximum length of category name is 50 characters!")
 
     category.name = name
 
@@ -167,9 +161,9 @@ def get_categories_stats(db: SQLAlchemy) -> dict:
 
     query_result = query.all()
 
-    stats = { result[0] : {
+    stats = { int(result[0]) : {
                             "name": result[1],
-                            "type": result[2],
+                            "type": result[2].name,
                             "total": float(result[3]),
                             "operations": result[4],
                             } for result in query_result }

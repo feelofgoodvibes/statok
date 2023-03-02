@@ -1,28 +1,12 @@
-from pydantic import BaseModel, validator, validate_arguments
-from typing import Optional
 from datetime import datetime
+from pydantic import validate_arguments
 from flask_sqlalchemy import SQLAlchemy
 
 from statok_app.models.category import Category, CategoryType
 from statok_app.models.operation import Operation
 from statok_app.service import pydantic_config
-
-
-OPERATION_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
-OPERATION_MAX_VALUE = 999999999.9999
-
-class OperationFilters(BaseModel):
-    date_from: Optional[str]
-    date_to: Optional[str]
-    category_id: Optional[int]
-    type: Optional[CategoryType]
-
-    @validator("date_from", "date_to")
-    def date_validation(cls, value):
-        try:
-            return datetime.strptime(value, OPERATION_DATE_FORMAT)
-        except Exception as exc:
-            raise ValueError("Filter date_from format should be: \"YYYY-MM-DD HH:MM:SS\"!") from exc
+from statok_app.schemas.operation import OperationFilters
+from statok_app.schemas import OPERATION_MAX_VALUE, OPERATION_DATE_FORMAT
 
 
 @validate_arguments(config=pydantic_config)
