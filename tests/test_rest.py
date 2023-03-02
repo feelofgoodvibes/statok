@@ -2,6 +2,8 @@ from fixtures import api_client
 from flask.testing import FlaskClient
 
 
+# REST Category tests --------------------------------
+
 def test_rest_get_all_categories(api_client: FlaskClient):
     response = api_client.get("/api/category")
     response_data = response.json
@@ -165,3 +167,302 @@ def test_rest_category_stats(api_client: FlaskClient):
     assert stats["4"] == {"name": "Transaction", "type": "INCOME", "total": 250.0, "operations": 1}
     assert stats["5"] == {"name": "Food", "type": "EXPENSE", "total": 15.0, "operations": 1}
     assert stats["6"] == {"name": "Transaction", "type": "EXPENSE", "total": 80.0, "operations": 2}
+
+
+# REST Operation tests --------------------------------
+
+def test_rest_operation_get_all(api_client: FlaskClient):
+    request = api_client.get("/api/operation")
+    data = request.json
+
+    assert request.status_code == 200
+    assert len(data) == 8
+    assert data[0]["value"] == 100
+    assert data[1]["value"] == 50
+    assert data[2]["value"] == 75
+    assert data[3]["value"] == 250
+
+
+def test_rest_operation_get_all_filters(api_client: FlaskClient):
+    # date_from
+    filters = {"date_from": "2023-02-20 15:00:00"}
+    request = api_client.get("/api/operation", query_string=filters)
+    assert request.status_code == 200 and len(request.json) == 5
+    
+    # date_to
+    filters = {"date_to": "2023-02-20 17:00:00"}
+    request = api_client.get("/api/operation", query_string=filters)
+    assert request.status_code == 200 and len(request.json) == 6
+    
+    # date_from + date_to
+    filters = {
+        "date_from": "2023-02-20 15:20:00",
+        "date_to": "2023-02-20 17:25:00"
+    }
+    request = api_client.get("/api/operation", query_string=filters)
+    assert request.status_code == 200 and len(request.json) == 2
+    
+    # category_id
+    filters = {
+        "category_id": 1
+    }
+    request = api_client.get("/api/operation", query_string=filters)
+    assert request.status_code == 200 and len(request.json) == 2
+
+    # category_id as str
+    filters = {
+        "category_id": "5"
+    }
+    request = api_client.get("/api/operation", query_string=filters)
+    assert request.status_code == 200 and len(request.json) == 1
+
+    # operation_type
+    filters = {
+        "type": 1
+    }
+    request = api_client.get("/api/operation", query_string=filters)
+    assert request.status_code == 200 and len(request.json) == 4
+
+    # Complex
+    filters = {
+        "date_from": "2023-02-20 16:00:00",
+        "date_to": "2023-02-20 17:15:11",
+        "type": "2"
+    }
+    request = api_client.get("/api/operation", query_string=filters)
+    assert request.status_code == 200 and len(request.json) == 2
+
+
+def test_rest_operation_get_all_wrong_filter(api_client: FlaskClient):
+    filters = { "date_from": "2023-02-XX 16:00:00" }
+    request = api_client.get("/api/operation", query_string=filters)
+    
+    assert request.status_code == 400
+    assert "error" in request.json
+
+    filters = { "date_to": "2023-02-00 16:00:x1" }
+    request = api_client.get("/api/operation", query_string=filters)
+    
+    assert request.status_code == 400
+    assert "error" in request.json
+
+    filters = { "category_id": "R" }
+    request = api_client.get("/api/operation", query_string=filters)
+    
+    assert request.status_code == 400
+    assert "error" in request.json
+
+    filters = { "type": "43" }
+    request = api_client.get("/api/operation", query_string=filters)
+    
+    assert request.status_code == 400
+    assert "error" in request.json
+
+
+def test_rest_operation_create(api_client: FlaskClient):
+    operation_data = {
+        "value": 150.26,
+        "category": 4
+    }
+
+    request = api_client.post("/api/operation", data=operation_data)
+
+    assert request.status_code == 201
+    assert request.json["value"] == 150.26
+    assert request.json["category"]["name"] == "Transaction"
+
+
+def test_rest_operation_create_empty(api_client: FlaskClient):
+    operation_data = {}
+
+    request = api_client.post("/api/operation", data=operation_data)
+
+    assert request.status_code == 400
+    assert "error" in request.json
+
+
+def test_rest_operation_create_wrong_value(api_client: FlaskClient):
+    operation_data = {
+        "value": 9999999999.22,
+        "category": 2
+    }
+
+    request = api_client.post("/api/operation", data=operation_data)
+
+    assert request.status_code == 400
+    assert "error" in request.json
+
+    operation_data = {
+        "value": "15as",
+        "category": 2
+    }
+
+    request = api_client.post("/api/operation", data=operation_data)
+
+    assert request.status_code == 400
+    assert "error" in request.json
+
+
+def test_rest_operation_create_wrong_category_id(api_client: FlaskClient):
+    operation_data = {
+        "value": 250,
+        "category": 9
+    }
+
+    request = api_client.post("/api/operation", data=operation_data)
+
+    assert request.status_code == 400
+    assert "error" in request.json
+    
+    operation_data = {
+        "value": 250,
+        "category": "random"
+    }
+
+    request = api_client.post("/api/operation", data=operation_data)
+
+    assert request.status_code == 400
+    assert "error" in request.json
+
+
+def test_rest_operation_create_category_value_conflict(api_client: FlaskClient):
+    operation_data = {
+        "value": -250,
+        "category": 1
+    }
+
+    request = api_client.post("/api/operation", data=operation_data)
+
+    assert request.status_code == 400
+    assert "error" in request.json
+    
+    operation_data = {
+        "value": 250,
+        "category": 2
+    }
+
+    request = api_client.post("/api/operation", data=operation_data)
+
+    assert request.status_code == 400
+    assert "error" in request.json
+
+
+def test_rest_operation_update(api_client: FlaskClient):
+    update_dict = {
+        "value": 1337.0,
+    }
+
+    request = api_client.put("/api/operation/3", data=update_dict)
+
+    assert request.status_code == 200
+    assert request.json["value"] == 1337.0
+
+
+def test_rest_operation_update(api_client: FlaskClient):
+    update_dict = {
+        "value": 1337.0,
+    }
+
+    request = api_client.put("/api/operation/3", data=update_dict)
+
+    assert request.status_code == 200
+    assert request.json["value"] == 1337.0
+    assert request.json["date"] == "2023-02-20 14:00:00"
+
+
+def test_rest_operation_update(api_client: FlaskClient):
+    update_dict = {
+        "date": "2023-01-28 14:50:22",
+    }
+
+    request = api_client.put("/api/operation/3", data=update_dict)
+
+    assert request.status_code == 200
+    assert request.json["value"] == 75
+    assert request.json["date"] == "2023-01-28 14:50:22"
+
+
+def test_rest_operation_update(api_client: FlaskClient):
+    update_dict = {
+        "category": "4",
+    }
+
+    request = api_client.put("/api/operation/3", data=update_dict)
+
+    assert request.status_code == 200
+    assert request.json["value"] == 75
+    assert request.json["category"]["name"] == "Transaction"
+
+
+def test_rest_operation_update_not_same_category_type(api_client: FlaskClient):
+    update_dict = {
+        "category": "2",
+    }
+
+    request = api_client.put("/api/operation/3", data=update_dict)
+    assert request.status_code == 400
+
+
+def test_rest_operation_update_nonexisting_category(api_client: FlaskClient):
+    update_dict = {
+        "category": 12,
+    }
+
+    request = api_client.put("/api/operation/3", data=update_dict)
+    assert request.status_code == 400
+
+
+def test_rest_operation_update_wrong_value(api_client: FlaskClient):
+    update_dict = {
+        "value": "215a",
+    }
+
+    request = api_client.put("/api/operation/3", data=update_dict)
+    assert request.status_code == 400
+
+
+def test_rest_operation_update_wrong_date(api_client: FlaskClient):
+    update_dict = {
+        "date": "2022-01-28 XX:01:11",
+    }
+
+    request = api_client.put("/api/operation/3", data=update_dict)
+    assert request.status_code == 400
+
+
+def test_rest_operation_update_clear(api_client: FlaskClient):
+    update_dict = {}
+
+    request = api_client.put("/api/operation/3", data=update_dict)
+    assert request.status_code == 200
+    assert request.json["value"] == 75
+    assert request.json["category"]["name"] == "Other"
+
+
+def test_rest_operation_get(api_client: FlaskClient):
+    request = api_client.get("/api/operation/4")
+
+    assert request.status_code == 200
+    assert request.json["value"] == 250
+    assert request.json["category"]["name"] == "Transaction"
+
+
+def test_rest_operation_get_nonexisting(api_client: FlaskClient):
+    request = api_client.get("/api/operation/15")
+
+    assert request.status_code == 404
+
+
+def test_rest_operation_delete(api_client: FlaskClient):
+    operations_before = api_client.get("/api/operation").json
+    request = api_client.delete("/api/operation/5")
+    operations_after = api_client.get("/api/operation").json
+
+    assert request.status_code == 200
+    assert request.json["value"] == 15
+    assert len(operations_before) - len(operations_after) == 1
+
+
+def test_rest_operation_delete_nonexisting(api_client: FlaskClient):
+    request = api_client.delete("/api/operation/22")
+    assert request.status_code == 404
