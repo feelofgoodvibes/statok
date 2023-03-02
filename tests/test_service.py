@@ -411,5 +411,3 @@ def test_random_validationerror_check(dummy_db: SQLAlchemy):
 
     with pytest.raises(ValidationError):
         service_operation.get_all_operations(dummy_db, {"date_from": "2022-XX-12 12:00:00"})
-
-

@@ -29,16 +29,16 @@ def get_all_categories(db: SQLAlchemy, category_type: CategoryType = None) -> Qu
 
 
 @validate_arguments(config=pydantic_config)
-def get_category(db: SQLAlchemy, c_id: int) -> Category:
+def get_category(db: SQLAlchemy, category_id: int) -> Category:
     """Get category by id
 
     Params
     ------
-    - c_id : `int`
+    - category_id : `int`
         * ID of the category
     """
 
-    category = db.session.query(Category).filter(Category.id==c_id).first()
+    category = db.session.query(Category).filter(Category.id==category_id).first()
 
     if category is None:
         raise ValueError("Category not found!")
@@ -47,41 +47,41 @@ def get_category(db: SQLAlchemy, c_id: int) -> Category:
 
 
 @validate_arguments(config=pydantic_config)
-def create_category(db: SQLAlchemy, name: constr(max_length=50), c_type: CategoryType) -> Category:
+def create_category(db: SQLAlchemy, name: constr(max_length=50), category_type: CategoryType) -> Category:
     """Create new category
 
     Params
     ------
     - name : `str`
         * Name of new category
-    - c_type: `CategoryType`
+    - category_type: `CategoryType`
         * Type of new category
     """
 
     same_category_check = (db.session.query(Category)
                                     .filter(Category.name==name,
-                                            Category.type==c_type)).first()
+                                            Category.type==category_type)).first()
 
     if same_category_check is not None:
         raise ValueError(f"Category with that name and type already exists (Category id = {same_category_check.id})")
 
-    new_category = Category(name=name, type=c_type)
+    new_category = Category(name=name, type=category_type)
     db.session.add(new_category)
 
     return new_category
 
 
 @validate_arguments(config=pydantic_config)
-def delete_category_operations(db: SQLAlchemy, c_id: int) -> list[Operation]:
+def delete_category_operations(db: SQLAlchemy, category_id: int) -> list[Operation]:
     """Delete all operations withing category by its `id`.
 
     Params
     ------
-    - c_id : `int`
+    - category_id : `int`
         * ID of the category
     """
 
-    operaions_in_category = get_all_operations(db, {"category_id": c_id})
+    operaions_in_category = get_all_operations(db, {"category_id": category_id})
     deleted_operations = operaions_in_category.all()
 
     operaions_in_category.delete()
@@ -90,22 +90,22 @@ def delete_category_operations(db: SQLAlchemy, c_id: int) -> list[Operation]:
 
 
 @validate_arguments(config=pydantic_config)
-def delete_category(db: SQLAlchemy, c_id: int) -> Category:
+def delete_category(db: SQLAlchemy, category_id: int) -> Category:
     """Delete category by its `id`.
     All operation within its category will be moved to default category "Other"
 
     Params
     ------
-    - c_id : `int`
+    - category_id : `int`
         * ID of the category to delete
     """
 
-    category = get_category(db, c_id)
+    category = get_category(db, category_id)
 
     if category.name == "Other":
         raise ValueError("This category cannot be deleted!")
 
-    operaions_in_category = get_all_operations(db, {"category_id": c_id})
+    operaions_in_category = get_all_operations(db, {"category_id": category_id})
 
     for operation in operaions_in_category:
         operation.category_id = 1 if category.type == CategoryType.INCOME else 2
@@ -117,18 +117,18 @@ def delete_category(db: SQLAlchemy, c_id: int) -> Category:
 
 
 @validate_arguments(config=pydantic_config)
-def update_category(db: SQLAlchemy, c_id: int, name: constr(max_length=50)) -> Category:
+def update_category(db: SQLAlchemy, category_id: int, name: constr(max_length=50)) -> Category:
     """Update category by its `id`.
 
     Params
     ------
-    - c_id : `int`
+    - category_id : `int`
         * ID of the category to update
     - name : `str`
         * New name of the category
     """
 
-    category = get_category(db, c_id)
+    category = get_category(db, category_id)
 
     if category.name == "Other":
         raise ValueError("This category cannot be edited!")

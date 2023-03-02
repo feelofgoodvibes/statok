@@ -1,3 +1,4 @@
+from typing import Union
 from datetime import datetime
 from pydantic import validate_arguments
 from flask_sqlalchemy import SQLAlchemy
@@ -26,7 +27,7 @@ def get_all_operations(db: SQLAlchemy, filters: dict = None):
         * filter operations to date. Format: `YYYY-MM-DD HH:MM:SS`
     - category_id : `int`
         * filter operations by category id
-    - operation_type : `CategoryType` | `int`
+    - type : `CategoryType` | `int`
         * filter operation by operation type. Accepts: [1 (income), 2 (expense), CategoryType]
     """
 
@@ -53,16 +54,16 @@ def get_all_operations(db: SQLAlchemy, filters: dict = None):
 
 
 @validate_arguments(config=pydantic_config)
-def get_operation(db: SQLAlchemy, op_id: int) -> Operation:
+def get_operation(db: SQLAlchemy, operation_id: int) -> Operation:
     """Get operation by id
 
     Params
     ------
-    - c_id : `int`
+    - operation_id : `int`
         * ID of the operation
     """
 
-    operaion = db.session.query(Operation).filter(Operation.id==op_id).first()
+    operaion = db.session.query(Operation).filter(Operation.id==operation_id).first()
 
     if operaion is None:
         raise ValueError("Operation not found!")
@@ -100,28 +101,28 @@ def create_operation(db: SQLAlchemy, value: float, category: Category) -> Operat
 
 
 @validate_arguments(config=pydantic_config)
-def delete_operation(db: SQLAlchemy, op_id: int) -> Operation:
+def delete_operation(db: SQLAlchemy, operation_id: int) -> Operation:
     """Delete operation by its `id`.
 
     Params
     ------
-    - op_id : `int`
+    - operation_id : `int`
         * ID of the operation to delete
     """
 
-    operation = get_operation(db, op_id)
+    operation = get_operation(db, operation_id)
     db.session.delete(operation)
 
     return operation
 
 
 @validate_arguments(config=pydantic_config)
-def update_operation(db: SQLAlchemy, op_id: int, value: float = None, category: Category = None, date: str = None):
+def update_operation(db: SQLAlchemy, operation_id: int, value: float = None, category: Category = None, date: str = None):
     """Update operation by its `id`.
 
     Params
     ------
-    - op_id : `int`
+    - operation_id : `int`
         * ID of the operation to update
     - value : `float`
         * New value of the operation (Max value = `+/-999,999,999.9999`)
@@ -132,7 +133,7 @@ def update_operation(db: SQLAlchemy, op_id: int, value: float = None, category: 
         * New date of the operation. Format: `YYYY-MM-DD HH:MM:SS`
     """
 
-    operation = get_operation(db, op_id)
+    operation = get_operation(db, operation_id)
     op_category_after_update = category or operation.category
 
     # Validate update values
