@@ -8,7 +8,7 @@ from statok_app.service import operation as service_operation
 from statok_app.models.category import Category, CategoryType
 from statok_app.models.operation import Operation
 
-from tests.fixtures import dummy_db
+from fixtures import dummy_db
 
 # ------------ Category tests ------------
 
@@ -75,10 +75,10 @@ def test_delete_category(dummy_db: SQLAlchemy):
 
     categories_before = service_category.get_all_categories(dummy_db).all()
     operation_in_category = dummy_db.session.query(Operation).filter(Operation.category_id==TARGET_CATEGORY).all()
-    
+
     service_category.delete_category(dummy_db, TARGET_CATEGORY)
     dummy_db.session.commit()
-    
+
     categories_after = service_category.get_all_categories(dummy_db).all()
 
     assert len(categories_before) - len(categories_after) == 1
@@ -102,10 +102,10 @@ def test_delete_category_operations(dummy_db: SQLAlchemy):
 
     assert len(deleted_operations) == 2
     assert len(category_operations_after) == 0
-    
+
 
 def test_update_category(dummy_db: SQLAlchemy):
-    category = service_category.get_category(dummy_db, 4)    
+    category = service_category.get_category(dummy_db, 4)
     service_category.update_category(dummy_db, 4, "NewName")
     dummy_db.session.commit()
 
@@ -125,13 +125,13 @@ def test_update_default_category_error(dummy_db: SQLAlchemy):
         service_category.update_category(dummy_db, 2, "Test")
 
 
-def test_get_categories_report(dummy_db: SQLAlchemy):
+def test_get_categories_stats(dummy_db: SQLAlchemy):
     stats = service_category.get_categories_stats(dummy_db)
 
     assert len(stats) == 6
-    assert stats[1] == {"name": "Other", "type": CategoryType.INCOME, "total": 125, "operations": 2}
-    assert stats[3] == {"name": "Salary", "type": CategoryType.INCOME, "total": 100, "operations": 1}
-    assert stats[6] == {"name": "Transaction", "type": CategoryType.EXPENSE, "total": 80, "operations": 2}
+    assert stats[1] == {"name": "Other", "type": "INCOME", "total": 125, "operations": 2}
+    assert stats[3] == {"name": "Salary", "type": "INCOME", "total": 100, "operations": 1}
+    assert stats[6] == {"name": "Transaction", "type": "EXPENSE", "total": 80, "operations": 2}
 
 
 # ------------ Operations tests ------------
@@ -161,7 +161,7 @@ def test_get_all_operations_filter_date_to(dummy_db: SQLAlchemy):
 
     for operation in operations:
         assert operation.date <= date_to
-        
+
     assert len(operations) == 3
 
 
@@ -174,10 +174,10 @@ def test_get_all_operations_filter_date(dummy_db: SQLAlchemy):
     date_from = datetime.strptime(filters["date_from"], service_operation.OPERATION_DATE_FORMAT)
     date_to = datetime.strptime(filters["date_to"], service_operation.OPERATION_DATE_FORMAT)
     operations = service_operation.get_all_operations(dummy_db, filters=filters).all()
-    
+
     for operation in operations:
         assert date_from <= operation.date <= date_to
-        
+
     assert len(operations) == 4
 
 
@@ -185,7 +185,7 @@ def test_get_all_operations_filter_category_id(dummy_db: SQLAlchemy):
     filters = { "category_id": 1 }
 
     operations = service_operation.get_all_operations(dummy_db, filters=filters).all()
-    
+
     assert len(operations) == 2
     for operation in operations:
         assert operation.category.id == filters["category_id"]
@@ -195,7 +195,7 @@ def test_get_all_operations_filter_operation_type(dummy_db: SQLAlchemy):
     filters = {"type": 1}
 
     operations = service_operation.get_all_operations(dummy_db, filters=filters).all()
-    
+
     assert len(operations) == 4
     for operation in operations:
         assert operation.category.type == CategoryType.INCOME
@@ -211,7 +211,7 @@ def test_get_all_operations_filter_complex(dummy_db: SQLAlchemy):
     date_from = datetime.strptime(filters["date_from"], service_operation.OPERATION_DATE_FORMAT)
     date_to = datetime.strptime(filters["date_to"], service_operation.OPERATION_DATE_FORMAT)
     operations = service_operation.get_all_operations(dummy_db, filters=filters).all()
-    
+
     assert len(operations) == 2
 
     for operation in operations:
@@ -412,4 +412,4 @@ def test_random_validationerror_check(dummy_db: SQLAlchemy):
     with pytest.raises(ValidationError):
         service_operation.get_all_operations(dummy_db, {"date_from": "2022-XX-12 12:00:00"})
 
-        
+
