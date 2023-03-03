@@ -2,9 +2,11 @@ import os
 from flask import Flask
 from flask_migrate import Migrate
 
-from .models.database import db
-from .models.category import Category, CategoryType
-from .models.operation import Operation
+from statok_app.models.database import db
+from statok_app.models.category import Category, CategoryType
+from statok_app.models.operation import Operation
+
+from statok_app.rest.api import api_blueprint
 
 
 MYSQL_USER = os.environ.get("MYSQL_USER")
@@ -29,6 +31,9 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
 
+    # Bluepring registering
+    app.register_blueprint(api_blueprint, url_prefix="/api")
+
     return app
 
 
@@ -42,5 +47,14 @@ def create_test_app():
 
     db.init_app(app)
     migrate.init_app(app, db)
+    
+    # Bluepring registering
+    app.register_blueprint(api_blueprint, url_prefix="/api")
 
     return app
+
+
+if __name__ == "__main__":
+    app = create_app()
+
+    app.run(debug=True)
