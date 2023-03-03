@@ -1,13 +1,12 @@
-from typing import Union
 from datetime import datetime
-from pydantic import validate_arguments
+from pydantic import validate_arguments, confloat
 from flask_sqlalchemy import SQLAlchemy
 
 from statok_app.models.category import Category, CategoryType
 from statok_app.models.operation import Operation
-from statok_app.service import pydantic_config
 from statok_app.schemas.operation import OperationFilters
 from statok_app.schemas import OPERATION_MAX_VALUE, OPERATION_DATE_FORMAT
+from statok_app.service import pydantic_config
 
 
 @validate_arguments(config=pydantic_config)
@@ -72,7 +71,9 @@ def get_operation(db: SQLAlchemy, operation_id: int) -> Operation:
 
 
 @validate_arguments(config=pydantic_config)
-def create_operation(db: SQLAlchemy, value: float, category: Category) -> Operation:
+def create_operation(db: SQLAlchemy,
+                     value: confloat(ge=-OPERATION_MAX_VALUE, le=OPERATION_MAX_VALUE),
+                     category: Category) -> Operation:
     """Create new operation
 
     Params
@@ -90,9 +91,6 @@ def create_operation(db: SQLAlchemy, value: float, category: Category) -> Operat
 
     if category.type == CategoryType.EXPENSE and value > 0:
         raise ValueError("Value of operation for expense category cannot be positive")
-
-    if abs(value) > OPERATION_MAX_VALUE:
-        raise ValueError(f"Max value of operation equals to +/-{OPERATION_MAX_VALUE}")
 
     new_operation = Operation(value=value, category_id=category.id)
     db.session.add(new_operation)
@@ -117,7 +115,11 @@ def delete_operation(db: SQLAlchemy, operation_id: int) -> Operation:
 
 
 @validate_arguments(config=pydantic_config)
-def update_operation(db: SQLAlchemy, operation_id: int, value: float = None, category: Category = None, date: str = None):
+def update_operation(db: SQLAlchemy,
+                     operation_id: int,
+                     value: confloat(ge=-OPERATION_MAX_VALUE, le=OPERATION_MAX_VALUE) = None,
+                     category: Category = None,
+                     date: datetime = None):
     """Update operation by its `id`.
 
     Params
@@ -137,9 +139,6 @@ def update_operation(db: SQLAlchemy, operation_id: int, value: float = None, cat
     op_category_after_update = category or operation.category
 
     # Validate update values
-    if value is not None and abs(value) > OPERATION_MAX_VALUE:
-        raise ValueError(f"Max value of operation equals to +/-{OPERATION_MAX_VALUE}")
-
     if category is not None and operation.category.type != category.type:
         raise ValueError("Category types should be same!")
 
@@ -148,12 +147,6 @@ def update_operation(db: SQLAlchemy, operation_id: int, value: float = None, cat
 
     if value and op_category_after_update.type == CategoryType.EXPENSE and value > 0:
         raise ValueError("Value of operation for expense category cannot be positive")
-
-    if date:
-        try:
-            date = datetime.strptime(date, OPERATION_DATE_FORMAT)
-        except Exception as exc:
-            raise ValueError("date format should be: \"YYYY-MM-DD HH:MM:SS\"!") from exc
 
     # Update operation
     if value:

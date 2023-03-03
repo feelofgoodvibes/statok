@@ -26,21 +26,24 @@ def api_category_all():
             response = [orjson.loads(schemas_category.CategoryBase.from_orm(category).json())
                         for category in categories], 200
         except ValidationError as exc:
-            response = { "error": orjson.loads(exc.json()) }, 400
+            response = { "error": orjson.loads(exc.json().replace("category_type", "type")) }, 400
 
     elif request.method == "POST":
-        try:
-            category_fields = schemas_category.CategoryCreate.parse_obj(request.form)
-        except ValidationError as exc:
-            return { "error": orjson.loads(exc.json()) }, 400
+        category_type = request.form.get("type")
 
-        new_category = service_category.create_category(db,
-                                                        name=category_fields.name,
-                                                        category_type=category_fields.type)
+        if isinstance(category_type, str) and category_type.isnumeric():
+            category_type = int(category_type)
+
+        try:
+            new_category = service_category.create_category(db,
+                                                            name=request.form.get("name"),
+                                                            category_type=category_type)
+        except ValidationError as exc:
+            return { "error": orjson.loads(exc.json().replace("category_type", "type")) }, 400
+
         db.session.commit()
 
         response_model = schemas_category.Category.from_orm(new_category)
-
         response = orjson.loads(response_model.json()), 201
 
     return response
@@ -52,34 +55,31 @@ def api_category(category_id: int):
     if request.method == "GET":
         try:
             category = service_category.get_category(db, category_id)
-            response = orjson.loads(schemas_category.Category.from_orm(category).json()), 200
+            return orjson.loads(schemas_category.Category.from_orm(category).json()), 200
         except ValueError as exc:
-            response = { "error": str(exc) }, 404
+            return { "error": str(exc) }, 404
 
     elif request.method == "PUT":
         name = request.form.get("name")
 
-        if name is None:
-            return {"error": "Argument name is required!"}, 400
-
         try:
             updated_category = service_category.update_category(db, category_id, name)
-            db.session.commit()
-            response = orjson.loads(schemas_category.Category.from_orm(updated_category).json()), 200
         except ValidationError as exc:
-            response = { "error": orjson.loads(exc.json()) }, 400
+            return { "error": orjson.loads(exc.json()) }, 400
         except ValueError as exc:
-            response =  { "error": str(exc) }, 400
+            return  { "error": str(exc) }, 400
+
+        db.session.commit()
+        return orjson.loads(schemas_category.Category.from_orm(updated_category).json()), 200
 
     elif request.method == "DELETE":
         try:
             deleted_category = service_category.delete_category(db, category_id)
-            db.session.commit()
-            response = orjson.loads(schemas_category.Category.from_orm(deleted_category).json()), 200
         except ValueError as exc:
-            response = { "error": str(exc) }, 400
+            return { "error": str(exc) }, 400
 
-    return response
+        db.session.commit()
+        return orjson.loads(schemas_category.Category.from_orm(deleted_category).json()), 200
 
 
 def api_category_clear(category_id: int):

@@ -38,27 +38,5 @@ class Category(CategoryBase):
     operations: "list[OperationBase]"
 
 
-class CategoryCreate(BaseModel):
-    """Category schema for POST creation
-
-    Fields
-    ------
-    * name : `str`
-    * type : `CategoryType`
-    """
-
-    name: constr(max_length=50)
-    type: CategoryType
-
-    @validator('type', pre=True)
-    def type_str_to_int(cls, value):
-        """A validator for transforming numeric strings to int for parsing CategoryType"""
-
-        if isinstance(value, str) and value.isnumeric():
-            return int(value)
-
-        return value
-
-
 from statok_app.schemas.operation import OperationBase
 Category.update_forward_refs()

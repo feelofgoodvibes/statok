@@ -16,31 +16,27 @@ def api_operation_all():
     if request.method == "GET":
         try:
             operations = service_operation.get_all_operations(db, filters=request.args)
-            response = [orjson.loads(schemas_operation.Operation.from_orm(operation).json())
+            return [orjson.loads(schemas_operation.Operation.from_orm(operation).json())
                         for operation in operations], 200
         except ValidationError as exc:
-            response = { "error": orjson.loads(exc.json()) }, 400
+            return { "error": orjson.loads(exc.json()) }, 400
 
     elif request.method == "POST":
         try:
             operation_category = service_category.get_category(db, request.form.get("category_id"))
-            operation_dict = {"value": request.form.get("value"), "category_id": operation_category}
-            operation_fields = schemas_operation.OperationCreate.parse_obj(operation_dict)
 
             new_operation = service_operation.create_operation(db,
-                                                            value=operation_fields.value,
-                                                            category=operation_fields.category_id)
-            db.session.commit()
-
-            response_model = schemas_operation.Operation.from_orm(new_operation)
-            response = orjson.loads(response_model.json()), 201
+                                                            value=request.form.get("value"),
+                                                            category=operation_category)
         except ValidationError as exc:
             return {"error": orjson.loads(exc.json())}, 400
         except ValueError as exc:
             return {"error": str(exc)}, 400
 
+        db.session.commit()
 
-    return response
+        response_model = schemas_operation.Operation.from_orm(new_operation)
+        return orjson.loads(response_model.json()), 201
 
 
 def api_operation(operation_id):
@@ -49,36 +45,26 @@ def api_operation(operation_id):
     if request.method == "GET":
         try:
             operation = service_operation.get_operation(db, operation_id)
-            response = orjson.loads(schemas_operation.Operation.from_orm(operation).json()), 200
+            return orjson.loads(schemas_operation.Operation.from_orm(operation).json()), 200
         except ValueError as exc:
-            response = { "error": str(exc) }, 404
+            return { "error": str(exc) }, 404
 
     elif request.method == "PUT":
         try:
-            if request.form.get("category"):
-                update_category = service_category.get_category(db, request.form.get("category"))
+            if request.form.get("category_id"):
+                update_category = service_category.get_category(db, request.form.get("category_id"))
             else:
                 update_category = None
 
-            update_dict = {
-                "value": request.form.get("value"),
-                "category": update_category,
-                "date": request.form.get("date")
-                }
-
-            print(f"Updating operation {operation_id} with dict: {update_dict} (date type: {type(update_dict.get('date'))})")
-
-            update_fields = schemas_operation.OperationUpdate.parse_obj(update_dict)
             updated_operation = service_operation.update_operation(db,
                                                                    operation_id=operation_id,
-                                                                   value=update_fields.value,
-                                                                   category=update_fields.category,
-                                                                   date=update_fields.date)
+                                                                   value=request.form.get("value"),
+                                                                   category=update_category,
+                                                                   date=request.form.get("date"))
             db.session.commit()
 
-            print("Update successful!")
             response_model = schemas_operation.Operation.from_orm(updated_operation)
-            response = orjson.loads(response_model.json()), 200
+            return orjson.loads(response_model.json()), 200
         except ValidationError as exc:
             return {"error": orjson.loads(exc.json())}, 400
         except ValueError as exc:
@@ -88,8 +74,8 @@ def api_operation(operation_id):
         try:
             deleted_operation = service_operation.delete_operation(db, operation_id)
             response = orjson.loads(schemas_operation.Operation.from_orm(deleted_operation).json()), 200
+            
             db.session.commit()
+            return response
         except ValueError as exc:
-            response = { "error": str(exc) }, 404
-
-    return response
+            return { "error": str(exc) }, 404
