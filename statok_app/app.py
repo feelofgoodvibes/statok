@@ -23,35 +23,35 @@ migrate = Migrate()
 def create_app():
     """Initalize app with plugins"""
 
-    app = Flask(__name__)
+    new_app = Flask(__name__)
 
-    app.config["SQLALCHEMY_DATABASE_URI"] = MYSQL_DBURI
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    new_app.config["SQLALCHEMY_DATABASE_URI"] = MYSQL_DBURI
+    new_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-    db.init_app(app)
-    migrate.init_app(app, db)
+    db.init_app(new_app)
+    migrate.init_app(new_app, db)
 
     # Bluepring registering
-    app.register_blueprint(api_blueprint, url_prefix="/api")
+    new_app.register_blueprint(api_blueprint, url_prefix="/api")
 
-    return app
+    return new_app
 
 
 def create_test_app():
     """Initalize app for testing"""
 
-    app = Flask(__name__)
+    test_app = Flask(__name__)
 
-    app.config["SQLALCHEMY_DATABASE_URI"] = MYSQL_TEST_DBURI
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    test_app.config["SQLALCHEMY_DATABASE_URI"] = MYSQL_TEST_DBURI
+    test_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-    db.init_app(app)
-    migrate.init_app(app, db)
-    
+    db.init_app(test_app)
+    migrate.init_app(test_app, db)
+
     # Bluepring registering
-    app.register_blueprint(api_blueprint, url_prefix="/api")
+    test_app.register_blueprint(api_blueprint, url_prefix="/api")
 
-    return app
+    return test_app
 
 
 if __name__ == "__main__":
