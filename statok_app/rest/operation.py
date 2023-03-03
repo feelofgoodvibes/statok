@@ -23,13 +23,13 @@ def api_operation_all():
 
     elif request.method == "POST":
         try:
-            operation_category = service_category.get_category(db, request.form.get("category"))
-            operation_dict = {"value": request.form.get("value"), "category": operation_category}
+            operation_category = service_category.get_category(db, request.form.get("category_id"))
+            operation_dict = {"value": request.form.get("value"), "category_id": operation_category}
             operation_fields = schemas_operation.OperationCreate.parse_obj(operation_dict)
 
             new_operation = service_operation.create_operation(db,
                                                             value=operation_fields.value,
-                                                            category=operation_fields.category)
+                                                            category=operation_fields.category_id)
             db.session.commit()
 
             response_model = schemas_operation.Operation.from_orm(new_operation)
@@ -66,6 +66,8 @@ def api_operation(operation_id):
                 "date": request.form.get("date")
                 }
 
+            print(f"Updating operation {operation_id} with dict: {update_dict} (date type: {type(update_dict.get('date'))})")
+
             update_fields = schemas_operation.OperationUpdate.parse_obj(update_dict)
             updated_operation = service_operation.update_operation(db,
                                                                    operation_id=operation_id,
@@ -74,6 +76,7 @@ def api_operation(operation_id):
                                                                    date=update_fields.date)
             db.session.commit()
 
+            print("Update successful!")
             response_model = schemas_operation.Operation.from_orm(updated_operation)
             response = orjson.loads(response_model.json()), 200
         except ValidationError as exc:

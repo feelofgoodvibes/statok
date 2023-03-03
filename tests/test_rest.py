@@ -262,7 +262,7 @@ def test_rest_operation_get_all_wrong_filter(api_client: FlaskClient):
 def test_rest_operation_create(api_client: FlaskClient):
     operation_data = {
         "value": 150.26,
-        "category": 4
+        "category_id": 4
     }
 
     request = api_client.post("/api/operation", data=operation_data)
@@ -284,7 +284,7 @@ def test_rest_operation_create_empty(api_client: FlaskClient):
 def test_rest_operation_create_wrong_value(api_client: FlaskClient):
     operation_data = {
         "value": 9999999999.22,
-        "category": 2
+        "category_id": 2
     }
 
     request = api_client.post("/api/operation", data=operation_data)
@@ -294,7 +294,7 @@ def test_rest_operation_create_wrong_value(api_client: FlaskClient):
 
     operation_data = {
         "value": "15as",
-        "category": 2
+        "category_id": 2
     }
 
     request = api_client.post("/api/operation", data=operation_data)
@@ -306,7 +306,7 @@ def test_rest_operation_create_wrong_value(api_client: FlaskClient):
 def test_rest_operation_create_wrong_category_id(api_client: FlaskClient):
     operation_data = {
         "value": 250,
-        "category": 9
+        "category_id": 9
     }
 
     request = api_client.post("/api/operation", data=operation_data)
@@ -328,7 +328,7 @@ def test_rest_operation_create_wrong_category_id(api_client: FlaskClient):
 def test_rest_operation_create_category_value_conflict(api_client: FlaskClient):
     operation_data = {
         "value": -250,
-        "category": 1
+        "category_id": 1
     }
 
     request = api_client.post("/api/operation", data=operation_data)
@@ -338,7 +338,7 @@ def test_rest_operation_create_category_value_conflict(api_client: FlaskClient):
     
     operation_data = {
         "value": 250,
-        "category": 2
+        "category_id": 2
     }
 
     request = api_client.post("/api/operation", data=operation_data)

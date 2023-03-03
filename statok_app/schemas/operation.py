@@ -8,14 +8,15 @@ from statok_app.models.category import CategoryType, Category
 from statok_app.schemas import json_encoders, OPERATION_DATE_FORMAT, OPERATION_MAX_VALUE
 
 
-def date_validation(value: datetime):
+def date_validation(value: str):
     """A validator for transforming numeric strings to int for parsing CategoryType"""
 
     if value is None:
         return value
 
     try:
-        return datetime.strptime(value, OPERATION_DATE_FORMAT)
+        datetime.strptime(value, OPERATION_DATE_FORMAT)
+        return value
     except Exception as exc:
         raise ValueError("Filter date_from format should be: \"YYYY-MM-DD HH:MM:SS\"!") from exc
 
@@ -61,11 +62,11 @@ class OperationCreate(BaseModel):
     Fields
     ------
     * value : `float`
-    * category : `Category`
+    * category_id : `Category`
     """
 
     value: confloat(ge=-OPERATION_MAX_VALUE, le=OPERATION_MAX_VALUE, allow_inf_nan=False)
-    category: Category
+    category_id: Category
 
     class Config:
         """Pydantic model config"""
