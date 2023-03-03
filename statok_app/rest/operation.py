@@ -74,7 +74,7 @@ def api_operation(operation_id):
         try:
             deleted_operation = service_operation.delete_operation(db, operation_id)
             response = orjson.loads(schemas_operation.Operation.from_orm(deleted_operation).json()), 200
-            
+
             db.session.commit()
             return response
         except ValueError as exc:
