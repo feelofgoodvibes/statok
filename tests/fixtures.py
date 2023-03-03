@@ -72,7 +72,6 @@ def api_client() -> FlaskClient:
 
     test_app = create_test_app()
     test_app.config["TESTING"] = True
-    test_app.register_blueprint(api_blueprint, url_prefix="/api")
 
     with test_app.app_context():
         db.create_all()
