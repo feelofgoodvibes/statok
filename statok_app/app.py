@@ -32,7 +32,7 @@ def create_app():
     migrate.init_app(new_app, db)
 
     # Bluepring registering
-    new_app.register_blueprint(api_blueprint, url_prefix="/api")
+    new_app.register_blueprint(api_blueprint, url_prefix="/api/v1")
 
     return new_app
 
@@ -49,7 +49,7 @@ def create_test_app():
     migrate.init_app(test_app, db)
 
     # Bluepring registering
-    test_app.register_blueprint(api_blueprint, url_prefix="/api")
+    test_app.register_blueprint(api_blueprint, url_prefix="/api/v1")
 
     return test_app
 
