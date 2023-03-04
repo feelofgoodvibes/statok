@@ -7,6 +7,7 @@ from statok_app.service import category as service_category
 from statok_app.service import operation as service_operation
 from statok_app.models.category import Category, CategoryType
 from statok_app.models.operation import Operation
+from statok_app.schemas import OPERATION_MAX_VALUE, OPERATION_DATE_FORMAT
 
 from fixtures import dummy_db
 
@@ -144,7 +145,7 @@ def test_get_all_operations(dummy_db: SQLAlchemy):
 def test_get_all_operations_filter_date_from(dummy_db: SQLAlchemy):
     filters = { "date_from": "2023-02-20 16:00:00" }
 
-    date_from = datetime.strptime(filters["date_from"], service_operation.OPERATION_DATE_FORMAT)
+    date_from = datetime.strptime(filters["date_from"], OPERATION_DATE_FORMAT)
     operations = service_operation.get_all_operations(dummy_db, filters=filters).all()
 
     for operation in operations:
@@ -156,7 +157,7 @@ def test_get_all_operations_filter_date_from(dummy_db: SQLAlchemy):
 def test_get_all_operations_filter_date_to(dummy_db: SQLAlchemy):
     filters = { "date_to": "2023-02-20 14:00:00" }
 
-    date_to = datetime.strptime(filters["date_to"], service_operation.OPERATION_DATE_FORMAT)
+    date_to = datetime.strptime(filters["date_to"], OPERATION_DATE_FORMAT)
     operations = service_operation.get_all_operations(dummy_db, filters=filters).all()
 
     for operation in operations:
@@ -171,8 +172,8 @@ def test_get_all_operations_filter_date(dummy_db: SQLAlchemy):
         "date_to": "2023-02-20 17:45:00"
     }
 
-    date_from = datetime.strptime(filters["date_from"], service_operation.OPERATION_DATE_FORMAT)
-    date_to = datetime.strptime(filters["date_to"], service_operation.OPERATION_DATE_FORMAT)
+    date_from = datetime.strptime(filters["date_from"], OPERATION_DATE_FORMAT)
+    date_to = datetime.strptime(filters["date_to"], OPERATION_DATE_FORMAT)
     operations = service_operation.get_all_operations(dummy_db, filters=filters).all()
 
     for operation in operations:
@@ -208,8 +209,8 @@ def test_get_all_operations_filter_complex(dummy_db: SQLAlchemy):
         "date_to": "2023-02-20 18:40:00"
     }
 
-    date_from = datetime.strptime(filters["date_from"], service_operation.OPERATION_DATE_FORMAT)
-    date_to = datetime.strptime(filters["date_to"], service_operation.OPERATION_DATE_FORMAT)
+    date_from = datetime.strptime(filters["date_from"], OPERATION_DATE_FORMAT)
+    date_to = datetime.strptime(filters["date_to"], OPERATION_DATE_FORMAT)
     operations = service_operation.get_all_operations(dummy_db, filters=filters).all()
 
     assert len(operations) == 2
@@ -287,7 +288,7 @@ def test_create_operation_value_too_large(dummy_db: SQLAlchemy):
     category = service_category.get_category(dummy_db, 1)
 
     with pytest.raises(ValueError):
-        service_operation.create_operation(dummy_db, service_operation.OPERATION_MAX_VALUE+1, category)
+        service_operation.create_operation(dummy_db, OPERATION_MAX_VALUE+1, category)
 
 
 def test_delete_operation(dummy_db: SQLAlchemy):
@@ -347,7 +348,7 @@ def test_update_operation_wrong_value_for_expense(dummy_db: SQLAlchemy):
 
 def test_update_operation_wrong_value_too_large(dummy_db: SQLAlchemy):
     with pytest.raises(ValueError):
-        service_operation.update_operation(dummy_db, 1, value=service_operation.OPERATION_MAX_VALUE+1)
+        service_operation.update_operation(dummy_db, 1, value=OPERATION_MAX_VALUE+1)
 
 
 def test_update_operation_date(dummy_db: SQLAlchemy):

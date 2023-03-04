@@ -1,6 +1,6 @@
 # pylint: disable=wrong-import-position, cyclic-import, no-self-argument
 
-from pydantic import BaseModel, validator, constr
+from pydantic import BaseModel
 from statok_app.schemas import json_encoders, CategoryType
 
 

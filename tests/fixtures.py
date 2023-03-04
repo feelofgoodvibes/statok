@@ -11,8 +11,6 @@ from statok_app.models.database import db
 from statok_app.models.category import Category, CategoryType
 from statok_app.models.operation import Operation
 
-from statok_app.rest.api import api_blueprint
-
 
 @pytest.fixture()
 def test_db() -> SQLAlchemy:

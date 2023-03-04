@@ -8,7 +8,7 @@ from statok_app.models.category import Category, CategoryType
 from statok_app.models.operation import Operation, get_current_time
 from statok_app.app import create_app, create_test_app
 
-from fixtures import test_db, dummy_db
+from fixtures import test_db
 
 
 def test_db_insert_category(test_db: SQLAlchemy):

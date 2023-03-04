@@ -5,7 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from statok_app.models.category import Category, CategoryType
 from statok_app.models.operation import Operation
 from statok_app.schemas.operation import OperationFilters
-from statok_app.schemas import OPERATION_MAX_VALUE, OPERATION_DATE_FORMAT
+from statok_app.schemas import OPERATION_MAX_VALUE
 from statok_app.service import pydantic_config
 
 

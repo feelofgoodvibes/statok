@@ -2,10 +2,10 @@
 
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, validator, confloat
-from statok_app.models.category import CategoryType, Category
+from pydantic import BaseModel, validator
+from statok_app.models.category import CategoryType
 
-from statok_app.schemas import json_encoders, OPERATION_DATE_FORMAT, OPERATION_MAX_VALUE
+from statok_app.schemas import json_encoders, OPERATION_DATE_FORMAT
 
 
 class OperationBase(BaseModel):
