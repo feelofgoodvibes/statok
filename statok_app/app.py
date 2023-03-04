@@ -2,9 +2,8 @@ import os
 from flask import Flask
 from flask_migrate import Migrate
 
-from .models.database import db
-from .models.category import Category, CategoryType
-from .models.operation import Operation
+from statok_app.models.database import db
+from statok_app.rest.api import api_blueprint
 
 
 MYSQL_USER = os.environ.get("MYSQL_USER")
@@ -21,26 +20,32 @@ migrate = Migrate()
 def create_app():
     """Initalize app with plugins"""
 
-    app = Flask(__name__)
+    new_app = Flask(__name__)
 
-    app.config["SQLALCHEMY_DATABASE_URI"] = MYSQL_DBURI
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    new_app.config["SQLALCHEMY_DATABASE_URI"] = MYSQL_DBURI
+    new_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-    db.init_app(app)
-    migrate.init_app(app, db)
+    db.init_app(new_app)
+    migrate.init_app(new_app, db)
 
-    return app
+    # Api bluepring registering
+    new_app.register_blueprint(api_blueprint, url_prefix="/api/v1")
+
+    return new_app
 
 
 def create_test_app():
     """Initalize app for testing"""
 
-    app = Flask(__name__)
+    test_app = Flask(__name__)
 
-    app.config["SQLALCHEMY_DATABASE_URI"] = MYSQL_TEST_DBURI
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    test_app.config["SQLALCHEMY_DATABASE_URI"] = MYSQL_TEST_DBURI
+    test_app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-    db.init_app(app)
-    migrate.init_app(app, db)
+    db.init_app(test_app)
+    migrate.init_app(test_app, db)
 
-    return app
+    # Api bluepring registering
+    test_app.register_blueprint(api_blueprint, url_prefix="/api/v1")
+
+    return test_app

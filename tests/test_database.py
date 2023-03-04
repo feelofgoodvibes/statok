@@ -1,11 +1,14 @@
 from datetime import datetime
 import pytz
+
 from flask_sqlalchemy import SQLAlchemy
+from flask import Flask
 
 from statok_app.models.category import Category, CategoryType
 from statok_app.models.operation import Operation, get_current_time
+from statok_app.app import create_app, create_test_app
 
-from tests.fixtures import test_db, dummy_db
+from fixtures import test_db
 
 
 def test_db_insert_category(test_db: SQLAlchemy):
@@ -47,3 +50,11 @@ def test_db_get_current_time():
     assert time.year == time_now.year
     assert time.month == time_now.month
     assert time.day == time_now.day
+
+
+def test_app_creation():
+    app = create_app()
+    test_app = create_test_app()
+
+    assert isinstance(app, Flask)
+    assert isinstance(test_app, Flask)

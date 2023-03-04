@@ -1,13 +1,15 @@
 import pytest
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
+from pydantic import ValidationError
 
 from statok_app.service import category as service_category
 from statok_app.service import operation as service_operation
 from statok_app.models.category import Category, CategoryType
 from statok_app.models.operation import Operation
+from statok_app.schemas import OPERATION_MAX_VALUE, OPERATION_DATE_FORMAT
 
-from tests.fixtures import dummy_db
+from fixtures import dummy_db
 
 # ------------ Category tests ------------
 
@@ -17,9 +19,6 @@ def test_get_categories(dummy_db: SQLAlchemy):
 
 
 def test_get_categories_by_type(dummy_db: SQLAlchemy):
-    categories_str = service_category.get_all_categories(dummy_db, "income").all()
-    assert len(categories_str) == 3
-
     categories_int = service_category.get_all_categories(dummy_db, 2).all()
     assert len(categories_int) == 4
 
@@ -31,11 +30,17 @@ def test_get_categories_wrong_type(dummy_db: SQLAlchemy):
     with pytest.raises(ValueError):
         service_category.get_all_categories(dummy_db, 5).all()
 
+
 def test_get_category(dummy_db: SQLAlchemy):
     category = service_category.get_category(dummy_db, 5)
 
     assert category.id == 5
     assert category.name == "Food"
+
+
+def test_get_nonexisting_category(dummy_db: SQLAlchemy):
+    with pytest.raises(ValueError):
+        service_category.get_category(dummy_db, 10)
 
 
 def test_create_category(dummy_db: SQLAlchemy):
@@ -71,23 +76,16 @@ def test_delete_category(dummy_db: SQLAlchemy):
 
     categories_before = service_category.get_all_categories(dummy_db).all()
     operation_in_category = dummy_db.session.query(Operation).filter(Operation.category_id==TARGET_CATEGORY).all()
-    
+
     service_category.delete_category(dummy_db, TARGET_CATEGORY)
     dummy_db.session.commit()
-    
+
     categories_after = service_category.get_all_categories(dummy_db).all()
-    deleted_category = service_category.get_category(dummy_db, TARGET_CATEGORY)
 
     assert len(categories_before) - len(categories_after) == 1
-    assert deleted_category is None
 
     for operation in operation_in_category:
         assert operation.category_id in (1, 2)
-
-
-def test_delete_nonexisting_category(dummy_db: SQLAlchemy):
-    with pytest.raises(ValueError):
-        service_category.delete_category(dummy_db, 8)
 
 
 def test_delete_default_category(dummy_db: SQLAlchemy):
@@ -105,19 +103,14 @@ def test_delete_category_operations(dummy_db: SQLAlchemy):
 
     assert len(deleted_operations) == 2
     assert len(category_operations_after) == 0
-    
+
 
 def test_update_category(dummy_db: SQLAlchemy):
-    category = service_category.get_category(dummy_db, 4)    
+    category = service_category.get_category(dummy_db, 4)
     service_category.update_category(dummy_db, 4, "NewName")
     dummy_db.session.commit()
 
     assert category.name == "NewName"
-
-
-def test_update_nonexisting_category(dummy_db: SQLAlchemy):
-    with pytest.raises(ValueError):
-        service_category.update_category(dummy_db, 15, "NewName")
 
 
 def test_update_category_name_maxlen(dummy_db: SQLAlchemy):
@@ -133,13 +126,13 @@ def test_update_default_category_error(dummy_db: SQLAlchemy):
         service_category.update_category(dummy_db, 2, "Test")
 
 
-def test_get_categories_report(dummy_db: SQLAlchemy):
+def test_get_categories_stats(dummy_db: SQLAlchemy):
     stats = service_category.get_categories_stats(dummy_db)
 
     assert len(stats) == 6
-    assert stats[1] == {"name": "Other", "type": CategoryType.INCOME, "total": 125, "operations": 2}
-    assert stats[3] == {"name": "Salary", "type": CategoryType.INCOME, "total": 100, "operations": 1}
-    assert stats[6] == {"name": "Transaction", "type": CategoryType.EXPENSE, "total": 80, "operations": 2}
+    assert stats[1] == {"name": "Other", "type": "INCOME", "total": 125, "operations": 2}
+    assert stats[3] == {"name": "Salary", "type": "INCOME", "total": 100, "operations": 1}
+    assert stats[6] == {"name": "Transaction", "type": "EXPENSE", "total": 80, "operations": 2}
 
 
 # ------------ Operations tests ------------
@@ -152,7 +145,7 @@ def test_get_all_operations(dummy_db: SQLAlchemy):
 def test_get_all_operations_filter_date_from(dummy_db: SQLAlchemy):
     filters = { "date_from": "2023-02-20 16:00:00" }
 
-    date_from = datetime.strptime(filters["date_from"], service_operation.OPERATION_DATE_FORMAT)
+    date_from = datetime.strptime(filters["date_from"], OPERATION_DATE_FORMAT)
     operations = service_operation.get_all_operations(dummy_db, filters=filters).all()
 
     for operation in operations:
@@ -164,12 +157,12 @@ def test_get_all_operations_filter_date_from(dummy_db: SQLAlchemy):
 def test_get_all_operations_filter_date_to(dummy_db: SQLAlchemy):
     filters = { "date_to": "2023-02-20 14:00:00" }
 
-    date_to = datetime.strptime(filters["date_to"], service_operation.OPERATION_DATE_FORMAT)
+    date_to = datetime.strptime(filters["date_to"], OPERATION_DATE_FORMAT)
     operations = service_operation.get_all_operations(dummy_db, filters=filters).all()
 
     for operation in operations:
         assert operation.date <= date_to
-        
+
     assert len(operations) == 3
 
 
@@ -179,13 +172,13 @@ def test_get_all_operations_filter_date(dummy_db: SQLAlchemy):
         "date_to": "2023-02-20 17:45:00"
     }
 
-    date_from = datetime.strptime(filters["date_from"], service_operation.OPERATION_DATE_FORMAT)
-    date_to = datetime.strptime(filters["date_to"], service_operation.OPERATION_DATE_FORMAT)
+    date_from = datetime.strptime(filters["date_from"], OPERATION_DATE_FORMAT)
+    date_to = datetime.strptime(filters["date_to"], OPERATION_DATE_FORMAT)
     operations = service_operation.get_all_operations(dummy_db, filters=filters).all()
-    
+
     for operation in operations:
         assert date_from <= operation.date <= date_to
-        
+
     assert len(operations) == 4
 
 
@@ -193,17 +186,17 @@ def test_get_all_operations_filter_category_id(dummy_db: SQLAlchemy):
     filters = { "category_id": 1 }
 
     operations = service_operation.get_all_operations(dummy_db, filters=filters).all()
-    
+
     assert len(operations) == 2
     for operation in operations:
         assert operation.category.id == filters["category_id"]
 
 
 def test_get_all_operations_filter_operation_type(dummy_db: SQLAlchemy):
-    filters = {"type": "income"}
+    filters = {"type": 1}
 
     operations = service_operation.get_all_operations(dummy_db, filters=filters).all()
-    
+
     assert len(operations) == 4
     for operation in operations:
         assert operation.category.type == CategoryType.INCOME
@@ -211,15 +204,15 @@ def test_get_all_operations_filter_operation_type(dummy_db: SQLAlchemy):
 
 def test_get_all_operations_filter_complex(dummy_db: SQLAlchemy):
     filters = {
-        "type": "expense",
+        "type": 2,
         "date_from": "2023-02-20 16:10:00",
         "date_to": "2023-02-20 18:40:00"
     }
 
-    date_from = datetime.strptime(filters["date_from"], service_operation.OPERATION_DATE_FORMAT)
-    date_to = datetime.strptime(filters["date_to"], service_operation.OPERATION_DATE_FORMAT)
+    date_from = datetime.strptime(filters["date_from"], OPERATION_DATE_FORMAT)
+    date_to = datetime.strptime(filters["date_to"], OPERATION_DATE_FORMAT)
     operations = service_operation.get_all_operations(dummy_db, filters=filters).all()
-    
+
     assert len(operations) == 2
 
     for operation in operations:
@@ -242,9 +235,9 @@ def test_get_all_operations_wrong_date_to(dummy_db: SQLAlchemy):
 
 
 def test_get_all_operations_wrong_category_id(dummy_db: SQLAlchemy):
-    filters = { "category_id": "2" }
+    filters = { "category_id": "p" }
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError):
         service_operation.get_all_operations(dummy_db, filters=filters).all()
 
 
@@ -295,7 +288,7 @@ def test_create_operation_value_too_large(dummy_db: SQLAlchemy):
     category = service_category.get_category(dummy_db, 1)
 
     with pytest.raises(ValueError):
-        service_operation.create_operation(dummy_db, service_operation.OPERATION_MAX_VALUE+1, category)
+        service_operation.create_operation(dummy_db, OPERATION_MAX_VALUE+1, category)
 
 
 def test_delete_operation(dummy_db: SQLAlchemy):
@@ -355,7 +348,7 @@ def test_update_operation_wrong_value_for_expense(dummy_db: SQLAlchemy):
 
 def test_update_operation_wrong_value_too_large(dummy_db: SQLAlchemy):
     with pytest.raises(ValueError):
-        service_operation.update_operation(dummy_db, 1, value=service_operation.OPERATION_MAX_VALUE+1)
+        service_operation.update_operation(dummy_db, 1, value=OPERATION_MAX_VALUE+1)
 
 
 def test_update_operation_date(dummy_db: SQLAlchemy):
@@ -398,3 +391,24 @@ def test_update_operation_full(dummy_db: SQLAlchemy):
             == updated_operation.date.minute
             == updated_operation.date.second
             == 2)
+
+
+def test_random_validationerror_check(dummy_db: SQLAlchemy):
+    with pytest.raises(ValidationError):
+        service_category.delete_category(dummy_db, "as")
+
+    with pytest.raises(ValidationError):
+        service_category.create_category(dummy_db, "test", "income")
+
+    with pytest.raises(ValidationError):
+        service_category.update_category(dummy_db, "Wrong", "NewName")
+
+    with pytest.raises(ValidationError):
+        service_operation.create_operation(dummy_db, 100, 1)
+
+    with pytest.raises(ValidationError):
+        category = service_category.get_category(dummy_db, 1)
+        service_operation.create_operation(dummy_db, "Wrong", category)
+
+    with pytest.raises(ValidationError):
+        service_operation.get_all_operations(dummy_db, {"date_from": "2022-XX-12 12:00:00"})
