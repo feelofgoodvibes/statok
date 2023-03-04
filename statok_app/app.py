@@ -28,7 +28,7 @@ def create_app():
     db.init_app(new_app)
     migrate.init_app(new_app, db)
 
-    # Bluepring registering
+    # Api bluepring registering
     new_app.register_blueprint(api_blueprint, url_prefix="/api/v1")
 
     return new_app
@@ -45,7 +45,7 @@ def create_test_app():
     db.init_app(test_app)
     migrate.init_app(test_app, db)
 
-    # Bluepring registering
+    # Api bluepring registering
     test_app.register_blueprint(api_blueprint, url_prefix="/api/v1")
 
     return test_app
@@ -53,4 +53,4 @@ def create_test_app():
 
 if __name__ == "__main__":
     app = create_app()
-    app.run(debug=True)
+    app.run()

@@ -58,6 +58,7 @@ def create_category(db: SQLAlchemy, name: constr(max_length=50), category_type: 
         * Type of new category
     """
 
+    # Check if category with that name and type already exists
     same_category_check = (db.session.query(Category)
                                     .filter(Category.name==name,
                                             Category.type==category_type)).first()
