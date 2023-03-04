@@ -49,8 +49,3 @@ def create_test_app():
     test_app.register_blueprint(api_blueprint, url_prefix="/api/v1")
 
     return test_app
-
-
-if __name__ == "__main__":
-    app = create_app()
-    app.run()
