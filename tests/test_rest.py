@@ -1,6 +1,10 @@
 from fixtures import api_client
 from flask.testing import FlaskClient
 
+import logging
+
+# Disable logging when testing rest api
+logging.disable(logging.DEBUG)
 
 # REST Category tests --------------------------------
 
