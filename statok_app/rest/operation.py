@@ -8,20 +8,30 @@ from statok_app.models.database import db
 from statok_app.service import operation as service_operation
 from statok_app.service import category as service_category
 from statok_app.schemas import operation as schemas_operation
+from statok_app.rest import api_logger
 
 
 def api_operation_all():
     """View function for URL: `/operation`"""
 
     if request.method == "GET":
+        api_logger.debug(f"GET request at {request.full_path}. Args: {request.args}; Form: {request.form}")
+
         try:
             operations = service_operation.get_all_operations(db, filters=request.args)
-            return [orjson.loads(schemas_operation.Operation.from_orm(operation).json())
-                        for operation in operations], 200
         except ValidationError as exc:
+            api_logger.debug(f"ValidationError {exc.json()}")
             return { "error": orjson.loads(exc.json()) }, 400
+        
+        response_data = [orjson.loads(schemas_operation.Operation.from_orm(operation).json())
+                        for operation in operations]
+
+        api_logger.debug(f"Returning {len(response_data)} items")
+        return response_data, 200
 
     elif request.method == "POST":
+        api_logger.debug(f"POST request at {request.full_path}. Args: {request.args}; Form: {request.form}")
+
         try:
             operation_category = service_category.get_category(db, request.form.get("category_id"))
 
@@ -29,27 +39,40 @@ def api_operation_all():
                                                             value=request.form.get("value"),
                                                             category=operation_category)
         except ValidationError as exc:
+            api_logger.debug(f"ValidationError {exc.json()}")
             return {"error": orjson.loads(exc.json())}, 400
         except ValueError as exc:
+            api_logger.debug(f"ValueError {str(exc)}")
             return {"error": str(exc)}, 400
 
         db.session.commit()
 
         response_model = schemas_operation.Operation.from_orm(new_operation)
-        return orjson.loads(response_model.json()), 201
+        response_data = orjson.loads(response_model.json())
+
+        api_logger.debug(f"Item successfully created. Return item: {response_data}")
+        return response_data, 201
 
 
 def api_operation(operation_id):
     """View function for URL: `/operation/<int:operation_id>`"""
 
     if request.method == "GET":
+        api_logger.debug(f"GET request at {request.full_path}. Args: {request.args}; Form: {request.form}")
+
         try:
             operation = service_operation.get_operation(db, operation_id)
-            return orjson.loads(schemas_operation.Operation.from_orm(operation).json()), 200
+            response_data = orjson.loads(schemas_operation.Operation.from_orm(operation).json())
+
+            api_logger.debug(f"Return item: {response_data}")
+            return response_data, 200
         except ValueError as exc:
+            api_logger.debug(f"ValueError {str(exc)}")
             return { "error": str(exc) }, 404
 
     elif request.method == "PUT":
+        api_logger.debug(f"PUT request at {request.full_path}. Args: {request.args}; Form: {request.form}")
+
         try:
             if request.form.get("category_id"):
                 update_category = service_category.get_category(db, request.form.get("category_id"))
@@ -64,18 +87,28 @@ def api_operation(operation_id):
             db.session.commit()
 
             response_model = schemas_operation.Operation.from_orm(updated_operation)
-            return orjson.loads(response_model.json()), 200
+            response_data = orjson.loads(response_model.json())
+
+            api_logger.debug(f"Item successfully updated. Return item: {response_data}")
+            return response_data, 200
         except ValidationError as exc:
+            api_logger.debug(f"ValidationError {exc.json()}")
             return {"error": orjson.loads(exc.json())}, 400
         except ValueError as exc:
+            api_logger.debug(f"ValueError {str(exc)}")
             return {"error": str(exc)}, 400
 
     elif request.method == "DELETE":
+        api_logger.debug(f"DELETE request at {request.full_path}. Args: {request.args}; Form: {request.form}")
+
         try:
             deleted_operation = service_operation.delete_operation(db, operation_id)
-            response = orjson.loads(schemas_operation.Operation.from_orm(deleted_operation).json()), 200
+            response_data = orjson.loads(schemas_operation.Operation.from_orm(deleted_operation).json()), 200
 
             db.session.commit()
-            return response
+
+            api_logger.debug(f"Item successfully deleted. Return item: {response_data}")
+            return response_data
         except ValueError as exc:
+            api_logger.debug(f"ValueError {str(exc)}")
             return { "error": str(exc) }, 404
