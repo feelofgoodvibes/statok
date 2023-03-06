@@ -156,7 +156,7 @@ def get_categories_stats(db: SQLAlchemy) -> dict:
                          Category.type,
                          func.sum(Operation.value),
                          func.count(Category.operations)
-                ).join(Operation, Category.operations)
+                ).outerjoin(Operation, Category.operations)
                  .group_by(Category.id)
     )
 
@@ -165,8 +165,8 @@ def get_categories_stats(db: SQLAlchemy) -> dict:
     stats = { int(result[0]) : {
                             "name": result[1],
                             "type": result[2].name,
-                            "total": float(result[3]),
-                            "operations": result[4],
+                            "total": float(result[3] or 0),
+                            "operations": result[4] or 0,
                             } for result in query_result }
 
     return stats

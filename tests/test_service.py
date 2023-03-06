@@ -129,7 +129,7 @@ def test_update_default_category_error(dummy_db: SQLAlchemy):
 def test_get_categories_stats(dummy_db: SQLAlchemy):
     stats = service_category.get_categories_stats(dummy_db)
 
-    assert len(stats) == 6
+    assert len(stats) == 7
     assert stats[1] == {"name": "Other", "type": "INCOME", "total": 125, "operations": 2}
     assert stats[3] == {"name": "Salary", "type": "INCOME", "total": 100, "operations": 1}
     assert stats[6] == {"name": "Transaction", "type": "EXPENSE", "total": 80, "operations": 2}
