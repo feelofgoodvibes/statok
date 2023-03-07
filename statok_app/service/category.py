@@ -118,7 +118,7 @@ def delete_category(db: SQLAlchemy, category_id: int) -> Category:
 
 
 @validate_arguments(config=pydantic_config)
-def update_category(db: SQLAlchemy, category_id: int, name: constr(max_length=50)) -> Category:
+def update_category(db: SQLAlchemy, category_id: int, name: constr(max_length=50, min_length=1)) -> Category:
     """Update category by its `id`.
 
     Params
