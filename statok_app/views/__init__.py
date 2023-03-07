@@ -21,7 +21,7 @@ web_application_blueprint.add_url_rule("/operation/<int:operation_id>", view_fun
 
 # Add handler for 404 pages
 @web_application_blueprint.app_errorhandler(404)
-def views_404_erorr(errors):
+def views_404_error():
     return render_template("page404.html"), 404
 
 # Add redirect from `index` to `/operation`
