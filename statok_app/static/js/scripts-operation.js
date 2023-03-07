@@ -50,28 +50,65 @@ window.addEventListener("load", () => {
 
 function oppage_delete() {
     Swal.fire({
-        title: "Delete operation",
+        title: `Delete operation №${operation_data.id}`,
         text: "Are you sure you want to delete this operation?",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#DC3545",
         confirmButtonText: "Yes, delete",
-        cancelButtonColor: "#414141"
-    }).then((result) => {
-        if (result.isConfirmed) {
-            location.href='index.html'
+        cancelButtonColor: "#414141",
+
+        preConfirm: (result) => {
+            $.ajax({
+                url: "/api/v1/operation/" + operation_data.id,
+                method: "DELETE",
+                success: (response) => {
+                    Swal.fire({
+                        title: `Operation №${operation_data.id} was successfully deleted!`,
+                        icon: "success",
+                        confirmButtonColor: "#26923f"
+                    }).then(() => { location.href = "/"; })
+                }
+            }).catch(response => {
+                let erorr_msg = typeof response.responseJSON["error"] == "string" ?
+                                response.responseJSON["error"] :
+                                "Location: " + response.responseJSON["error"][0]["loc"] + ". Error: " + response.responseJSON["error"][0]["msg"];
+                Swal.fire({
+                    title: "Error occured!",
+                    text: erorr_msg,
+                    icon: "error",
+                    confirmButtonColor: "#26923f"
+                });
+            });
         }
     });
 }
 
 function oppage_save() {
-    Swal.fire({
-        title: "Save operation",
-        text: "Operation information successfully updated!",
-        icon: "success",
-    }).then((result) => {
-        if (result.isConfirmed) {
-            location.href='index.html'
+    let new_value = $("input[name='value']").val();
+    let new_date = $("input[name='datesingle']").data('daterangepicker').startDate.format("YYYY-MM-DD HH:mm:ss");
+    let new_category = $("#category-select").val();
+
+    $.ajax({
+        url: "/api/v1/operation/" + operation_data.id,
+        method: "PUT",
+        data: {"value": new_value, "date": new_date, "category_id": new_category},
+        success: (response) => {
+            Swal.fire({
+                title: `Operation №${operation_data.id} was successfully updated!`,
+                icon: "success",
+                confirmButtonColor: "#26923f"
+            }).then(() => { location.reload(); })
         }
+    }).catch(response => {
+        let erorr_msg = typeof response.responseJSON["error"] == "string" ?
+                        response.responseJSON["error"] :
+                        "Location: " + response.responseJSON["error"][0]["loc"] + ". Error: " + response.responseJSON["error"][0]["msg"];
+        Swal.fire({
+            title: "Error occured!",
+            text: erorr_msg,
+            icon: "error",
+            confirmButtonColor: "#26923f"
+        });
     });
 }

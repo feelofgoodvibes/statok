@@ -10,10 +10,10 @@ def view_operations():
     if "error" in operations:
         operations = requests.get(f"{API_URL}/operation").json()
 
-    return render_template("_operations.html", operations=operations)
+    return render_template("operations.html", operations=operations)
 
 
 def view_operation(operation_id: int):
     operation = requests.get(f"{API_URL}/operation/{operation_id}").json()
 
-    return render_template("_operation.html", operation=operation)
+    return render_template("operation.html", operation=operation)

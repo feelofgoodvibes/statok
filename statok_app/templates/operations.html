@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Operations | STATOK</title>
+{% endblock %}
+
+{% block body %}
+<div id="content">
+    <div id="content-leftcol">
+        <div id="leftcol-header">
+            <div id="total-money" class="bold fs-title">
+                <span>💰 Balance:</span>
+                <span id="total-money-value">???</span>
+            </div>                
+            <button class="button-pos" onclick="add_operation('income')">Add income</button>
+            <button class="button-neg" onclick="add_operation('expense')">Add expense</button>
+        </div>
+
+        <hr>
+
+        <div id="leftcol-content">
+            <div class="fs-title bold">Operations</div>
+            <div id="btn-filters">
+                <h3>Filters</h3>
+                <form onsubmit="return false;">
+                    <div>
+                        <label for="filter-daterange">Date range</label>
+                        <input style="width: 310px" id="filter-daterange" name="daterange">
+                    </div>
+
+                    <div>
+                        <input checked="checked" id="operationtype1" type="radio" name="operationtype" value="0">
+                        <label for="operationtype1">All</label>
+
+                        <input id="operationtype2" type="radio" name="operationtype" value="1">
+                        <label for="operationtype2">Income</label>
+
+                        <input id="operationtype3" type="radio" name="operationtype" value="2">
+                        <label for="operationtype3">Expense</label>
+                    </div>
+
+                    <button class="button-pos" onclick="applyFilters()">Apply</button>
+                    <button class="button-neg" onclick="clearFilters()">Clear</button>
+                </form>
+            </div>
+
+            <section class="operations-list">
+                {% for operation in operations %}
+                <div class="operation-item">
+                    <div class="operation-cell operation-id"><a href="/operation/{{ operation.id }}" class="a-clear extrabold">№{{ operation.id }}</a></div>
+                    <div class="operation-cell operation-value" data-type="{{ 'pos' if operation.value >= 0 else 'neg' }}">{{'-' if operation.value < 0 else ''}}${{ operation.value | abs }}</div>
+                    <div class="operation-cell operation-date">{{ operation.date }}</div>
+                    <div class="operation-cell operation-category"><a class="a-clear" href="/category/{{ operation.category.id }}">{{ operation.category.name }}</a></div>
+                    <div class="operation-cell">
+                        <div class="operation-actions">
+                            <div class="operation-btn-edit" data-opid="{{ operation.id }}" onclick="operationEdit(this)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                    <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                                </svg>
+                            </div>
+                            <div class="operation-btn-delete" data-opid="{{ operation.id }}" onclick="operationDelete(this)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </section>
+        </div>
+    </div>
+
+    <div id="content-rightcol">
+        <div id="wrapper-total-budget-pie">
+            <canvas id="total-budget-pie"></canvas>
+        </div>
+
+        <div id="wrapper-balance-history-chart">
+            <div class="chartlabel">Balance history</div>
+            <canvas id="balance-history-chart"></canvas>
+        </div>
+
+        <div id="wrapper-latest-incomes-chart">
+            <div class="chartlabel">Latest incomes</div>
+            <canvas id="latest-incomes-chart"></canvas>
+        </div>
+        
+        <div id="wrapper-latest-expenses-chart">
+            <div class="chartlabel">Latest expenses</div>
+            <canvas id="latest-expenses-chart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        var operations_data = JSON.parse('{{ operations | tojson | safe }}');
+    </script>
+</div>
+{% endblock %}

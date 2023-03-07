@@ -56,15 +56,27 @@ function edit_category() {
         confirmButtonText: "Save",
         confirmButtonColor: "#26923f",
         willOpen: () => {
-            Swal.getInput().value = "Food";
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            Swal.fire({
-                title: "Category saved!",
-                icon: "success",
-                confirmButtonColor: "#26923f"
-            }).then(() => { location.reload(); })
+            Swal.getInput().value = $("#category-name").text().slice(10);
+        },
+
+        preConfirm: (result) => {
+            return $.ajax({
+                url: "/api/v1/category/" + location.pathname.split("/")[2],
+                method: "PUT",
+                data: {"name": result},
+                success: (response) => {
+                    Swal.fire({
+                        title: "Category edited!",
+                        icon: "success",
+                        confirmButtonColor: "#26923f"
+                    }).then(() => { location.reload(); })
+                }
+            }).catch(response => {
+                let erorr_msg = typeof response.responseJSON["error"] == "string" ?
+                                response.responseJSON["error"] :
+                                "Location: " + response.responseJSON["error"][0]["loc"] + ". Error: " + response.responseJSON["error"][0]["msg"];
+                Swal.showValidationMessage(erorr_msg);
+            });
         }
     });
 }
@@ -72,18 +84,35 @@ function edit_category() {
 function delete_category() {
     Swal.fire({
         title: "Delete category",
-        text: "After deleting a category, all operations related to it will be transferred to the \"Other\" category. If you want to delete a category with all its operations, first use the \"Delete all\" option.",
+        text: "After deleting a category, all operations related to it will be transferred to the \"Other\" category. If you want to delete a category with all its operations, first use the \"Delete all operations\" option.",
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "Delete category",
         confirmButtonColor: "#C11414",
-    }).then((result) => {
-        if (result.isConfirmed) {
-            Swal.fire({
-                title: "Category deleted!",
-                icon: "success",
-                confirmButtonColor: "#26923f"
-            }).then(() => { location = 'index.html'; })
+
+        preConfirm: () => {
+            $.ajax({
+                url: "/api/v1/category/" + category_data.id,
+                method: "DELETE",
+                success: (response) => {
+                    console.log(response);
+                    Swal.fire({
+                        title: `\"${response.name}\" category was successfully deleted!`,
+                        icon: "success",
+                        confirmButtonColor: "#26923f"
+                    }).then(() => { location.href = "/category"; })
+                }
+            }).catch(response => {
+                let erorr_msg = typeof response.responseJSON["error"] == "string" ?
+                                response.responseJSON["error"] :
+                                "Location: " + response.responseJSON["error"][0]["loc"] + ". Error: " + response.responseJSON["error"][0]["msg"];
+                Swal.fire({
+                    title: "Error occured!",
+                    text: erorr_msg,
+                    icon: "error",
+                    confirmButtonColor: "#26923f"
+                })
+            });
         }
     });
 }
@@ -98,11 +127,17 @@ function delete_all_operations() {
         confirmButtonColor: "#C11414",
     }).then((result) => {
         if (result.isConfirmed) {
-            Swal.fire({
-                title: "All operations were deleted!",
-                icon: "success",
-                confirmButtonColor: "#26923f"
-            }).then(() => { location = 'index.html'; })
+            $.ajax({
+                url: "/api/v1/category/" + category_data.id + "/operation",
+                method: "DELETE",
+                success: () => {
+                    Swal.fire({
+                        title: "Operations successfully deleted!",
+                        icon: "success",
+                        confirmButtonColor: "#26923f"
+                    }).then(() => { location.reload(); });
+                }
+            })
         }
     });
 }

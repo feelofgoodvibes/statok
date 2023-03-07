@@ -81,7 +81,7 @@ function clearFilters() {
     location.href = location.origin + location.pathname;
 }
 
-function delete_operation(element) {
+function operationDelete(element) {
     let operation_id = parseInt(element.getAttribute("data-opid"));
 
     Swal.fire({
@@ -97,7 +97,13 @@ function delete_operation(element) {
             $.ajax({
                 url: "/api/v1/operation/" + operation_id,
                 method: "DELETE",
-                success: (response) => { location.reload(); },
+                success: (response) => {
+                    Swal.fire({
+                        title: `Operation №${response.id} was successfully deleted!`,
+                        icon: "success",
+                        confirmButtonColor: "#26923f"
+                    }).then(() => { location.reload(); })
+                },
                 error: (response) => {
                     Swal.fire({
                         title: "Error occured!",
@@ -277,7 +283,7 @@ function add_operation(type) {
 
                 for (let index in response){
                     $("#swal-select-category")[0].appendChild($("<option>", {"text": response[index].name, "value": response[index].id})[0]);
-                }        
+                }
             });
         },
 
@@ -322,17 +328,7 @@ function add_operation(type) {
                 });
             }
         }
-    })
-    // .then((result) => {
-    //     console.log(result["error"]);
-    //     console.log(result.value);
-    //     console.log("error" in result);
-    //     Swal.fire({
-    //         title: "Operation added successfully!",
-    //         icon: "success",
-    //         confirmButtonColor: "#26923f",
-    //     });
-    // });
+    });
 }
 
 function add_category(type) {
@@ -342,16 +338,49 @@ function add_category(type) {
         inputPlaceholder: "Name of the category",
         showCancelButton: true,
         confirmButtonText: "Add",
-        confirmButtonColor: "#26923f"
+        confirmButtonColor: "#26923f",
+
+        preConfirm: (result) => {
+            if (result.value == ""){
+                Swal.showValidationMessage("Incorrect value!");
+            }
+        }
+
     }).then((result) => {
-        if (result.isConfirmed){
+        if (!result.isConfirmed) return;
+        
+        let category_name = result.value;
+        let type_as_int = type.toLowerCase() == "income" ? 1 : 2;
+
+        $.post({
+            url: "/api/v1/category",
+            data: {"name": category_name, "type": type_as_int}
+        })
+        .done((response) => {
             Swal.fire({
-                title: "Category added!",
+                title: "Category added successfully!",
                 icon: "success",
                 confirmButtonColor: "#26923f"
+            }).then(() => { location.reload(); });
+        })
+        .fail ((response) => {
+            let erorr_msg;
 
-            }).then(() => { location = "categories.html"; });
-        }
+            if (typeof response.responseJSON["error"] == "string"){
+                erorr_msg = response.responseJSON["error"];
+            }
+
+            else {    
+                erorr_msg = "Location: " + response.responseJSON["error"][0]["loc"] + ". Error: " + response.responseJSON["error"][0]["msg"];
+            }
+
+            Swal.fire({
+                title: "Error occured!",
+                text: erorr_msg,
+                icon: "error",
+                confirmButtonColor: "#26923f"
+            });
+        });
     });
 }
 

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<script src="{{ url_for('static', filename='js/scripts-operation.js') }}"></script>
+<title>Operation №{{ operation.id }}</title>
+{% endblock %}
+
+{% block body %}
+<div id="operation-content">
+    <div class="fs-title extrabold">Operation №{{ operation.id}}</div>
+    <div>
+        <div class="fieldsform">
+            <div class="fieldsform-row">
+                <label>Value</label>
+                <input value="{{ operation.value }}" name="value" class="bold">
+            </div>
+            <div class="fieldsform-row">
+                <label>Date</label>
+                <input name="datesingle">
+            </div>
+            <div class="fieldsform-row">
+                <label>Category</label>
+                <select id="category-select">
+                </select>
+            </div>
+        </div>
+        <div class="fieldsform-buttons">
+            <button class="button-pos" onclick="oppage_save()">Save</button>
+            <button class="button-neg" onclick="oppage_delete()">Delete</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    var operation_data = JSON.parse('{{ operation | tojson | safe }}');
+</script>
+{% endblock %}
