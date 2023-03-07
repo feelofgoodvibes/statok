@@ -5,15 +5,21 @@ API_URL = "http://localhost:5000/api/v1"
 
 
 def view_operations():
-    operations = requests.get(f"{API_URL}/operation", params=request.args).json()
-    
+    """View for URL: /operation"""
+
+    # Get operation with filters, retrieved form request URL
+    operations = requests.get(f"{API_URL}/operation", params=request.args, timeout=5).json()
+
+    # If filters in the URL are wrong - get all operations without filters (default behaviour)
     if "error" in operations:
-        operations = requests.get(f"{API_URL}/operation").json()
+        operations = requests.get(f"{API_URL}/operation", timeout=5).json()
 
     return render_template("operations.html", operations=operations)
 
 
 def view_operation(operation_id: int):
-    operation = requests.get(f"{API_URL}/operation/{operation_id}").json()
+    """View for URL: /operation/<int:operation_id>"""
+
+    operation = requests.get(f"{API_URL}/operation/{operation_id}", timeout=5).json()
 
     return render_template("operation.html", operation=operation)
