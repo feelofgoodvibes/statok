@@ -47,7 +47,7 @@ def get_category(db: SQLAlchemy, category_id: int) -> Category:
 
 
 @validate_arguments(config=pydantic_config)
-def create_category(db: SQLAlchemy, name: constr(max_length=50), category_type: CategoryType) -> Category:
+def create_category(db: SQLAlchemy, name: constr(max_length=50, min_length=1), category_type: CategoryType) -> Category:
     """Create new category
 
     Params
