@@ -5,6 +5,7 @@ from pydantic import ValidationError
 import orjson
 
 from statok_app.models.database import db
+from statok_app.models.operation import Operation
 from statok_app.service import operation as service_operation
 from statok_app.service import category as service_category
 from statok_app.schemas import operation as schemas_operation
@@ -18,7 +19,7 @@ def api_operation_all():
         api_logger.debug("GET request at %s. Args: %s; Form: %s", request.full_path, request.args, request.form)
 
         try:
-            operations = service_operation.get_all_operations(db, filters=request.args)
+            operations = service_operation.get_all_operations(db, filters=request.args).order_by(Operation.date.desc())
         except ValidationError as exc:
             api_logger.debug("ValidationError %s", exc.json())
             return { "error": orjson.loads(exc.json()) }, 400
@@ -26,7 +27,7 @@ def api_operation_all():
         response_data = [orjson.loads(schemas_operation.Operation.from_orm(operation).json())
                         for operation in operations]
 
-        api_logger.debug("Returning {len(response_data)} items")
+        api_logger.debug("Returning %s items", len(response_data))
         return response_data, 200
 
     # POST request handling

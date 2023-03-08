@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{{ url_for('static', filename='css/ico.png') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery-ui.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/daterangepicker.css') }}">
+
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery-3.6.3.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery-ui.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/moment.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/daterangepicker.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/sweetalert2.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/chart.js') }}"></script>
+
+    {% block head %}
+    {% endblock %}
+</head>
+<body>
+    <div id="header">
+        <div id="logo">S</div>
+        <div id="header-items">
+            <a id="header-operations" {{ 'class="extrabold"' | safe if 'operation' in request.path.split('/') }} href="/">Operations</a>
+            <a id="header-categories" {{ 'class="extrabold"' | safe if 'category' in request.path.split('/') }} href="/category">Categories</a>
+        </div>
+        <div></div>
+    </div>
+
+    {% block body %}
+    {% endblock %}
+</body>
+</html>

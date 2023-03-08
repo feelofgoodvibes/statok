@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Categories | Statok</title>
+{% endblock %}
+
+{% block body %}
+
+<div id="categories-content">
+    <div id="categories-header">
+        <span class="fs-title bold">Categories</span>
+        <button class="button-pos" onclick="add_category('income')">Add income category</button>
+        <button class="button-neg" onclick="add_category('expense')">Add expense category</button>
+    </div>
+
+    <div id="income-categories-list">
+        {% for category, data in categories.items() %}
+        {% if data.type == 'INCOME' %}
+        <div class="categories-item category-pos">
+            <span class="categories-item-name"><a href="/category/{{ category }}">{{ data.name }}</a></span>
+            <span class="categories-item-amount">Operations: {{ data.operations }}</span>
+            <span class="categories-item-total">Total: ${{ data.total }}</span>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+
+    <div id="expense-categories-list">
+        {% for category, data in categories.items() %}
+        {% if data.type == 'EXPENSE' %}
+        <div class="categories-item category-neg">
+            <span class="categories-item-name"><a href="/category/{{ category }}">{{ data.name }}</a></span>
+            <span class="categories-item-amount">Operations: {{ data.operations }}</span>
+            <span class="categories-item-total">Total: -${{ data.total | abs }}</span>
+        </div>
+        {% endif %}
+        {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

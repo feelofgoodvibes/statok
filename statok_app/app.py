@@ -4,6 +4,7 @@ from flask_migrate import Migrate
 
 from statok_app.models.database import db
 from statok_app.rest.api import api_blueprint
+from statok_app.views import web_application_blueprint
 
 
 MYSQL_USER = os.environ.get("MYSQL_USER")
@@ -30,6 +31,7 @@ def create_app():
 
     # Api bluepring registering
     new_app.register_blueprint(api_blueprint, url_prefix="/api/v1")
+    new_app.register_blueprint(web_application_blueprint)
 
     return new_app
 
@@ -47,5 +49,6 @@ def create_test_app():
 
     # Api bluepring registering
     test_app.register_blueprint(api_blueprint, url_prefix="/api/v1")
+    test_app.register_blueprint(web_application_blueprint)
 
     return test_app

@@ -47,7 +47,7 @@ def get_category(db: SQLAlchemy, category_id: int) -> Category:
 
 
 @validate_arguments(config=pydantic_config)
-def create_category(db: SQLAlchemy, name: constr(max_length=50), category_type: CategoryType) -> Category:
+def create_category(db: SQLAlchemy, name: constr(max_length=50, min_length=1), category_type: CategoryType) -> Category:
     """Create new category
 
     Params
@@ -118,7 +118,7 @@ def delete_category(db: SQLAlchemy, category_id: int) -> Category:
 
 
 @validate_arguments(config=pydantic_config)
-def update_category(db: SQLAlchemy, category_id: int, name: constr(max_length=50)) -> Category:
+def update_category(db: SQLAlchemy, category_id: int, name: constr(max_length=50, min_length=1)) -> Category:
     """Update category by its `id`.
 
     Params
@@ -156,7 +156,7 @@ def get_categories_stats(db: SQLAlchemy) -> dict:
                          Category.type,
                          func.sum(Operation.value),
                          func.count(Category.operations)
-                ).join(Operation, Category.operations)
+                ).outerjoin(Operation, Category.operations)
                  .group_by(Category.id)
     )
 
@@ -165,8 +165,8 @@ def get_categories_stats(db: SQLAlchemy) -> dict:
     stats = { int(result[0]) : {
                             "name": result[1],
                             "type": result[2].name,
-                            "total": float(result[3]),
-                            "operations": result[4],
+                            "total": float(result[3] or 0),
+                            "operations": result[4] or 0,
                             } for result in query_result }
 
     return stats

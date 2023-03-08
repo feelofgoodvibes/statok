@@ -186,6 +186,7 @@ def test_rest_category_stats(api_client: FlaskClient):
     assert stats["4"] == {"name": "Transaction", "type": "INCOME", "total": 250.0, "operations": 1}
     assert stats["5"] == {"name": "Food", "type": "EXPENSE", "total": 15.0, "operations": 1}
     assert stats["6"] == {"name": "Transaction", "type": "EXPENSE", "total": 80.0, "operations": 2}
+    assert stats["7"] == {"name": "Books", "type": "EXPENSE", "total": 0, "operations": 0}
 
 
 # REST Operation tests --------------------------------
@@ -196,10 +197,6 @@ def test_rest_operation_get_all(api_client: FlaskClient):
 
     assert request.status_code == 200
     assert len(data) == 8
-    assert data[0]["value"] == 100
-    assert data[1]["value"] == 50
-    assert data[2]["value"] == 75
-    assert data[3]["value"] == 250
 
 
 def test_rest_operation_get_all_filters(api_client: FlaskClient):
