@@ -1,5 +1,6 @@
 from fixtures import api_client
 from flask.testing import FlaskClient
+from statok_app.rest.api import API_URL
 
 import logging
 
@@ -7,8 +8,6 @@ import logging
 logging.disable(logging.DEBUG)
 
 # REST Category tests --------------------------------
-
-API_URL = "/api/v1"
 
 def test_rest_get_all_categories(api_client: FlaskClient):
     response = api_client.get(f"{API_URL}/category")

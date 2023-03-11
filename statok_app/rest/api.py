@@ -5,6 +5,7 @@ from statok_app.rest import operation as api_operation
 
 # General api blueprint
 api_blueprint = Blueprint("api", __name__)
+API_URL = "/api/v1"
 
 
 # Category api
