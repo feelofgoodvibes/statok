@@ -393,7 +393,7 @@ body {
 }
 
 .categories-item:hover {
-    transform: scale(1.1) rotate(-3deg);
+    transform: scale(1.1);
     transition: .2s;
     z-index: 1000;
 }
