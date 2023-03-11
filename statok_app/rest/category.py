@@ -12,7 +12,18 @@ from statok_app.rest import api_logger
 
 
 def api_category_all():
-    """View function for URL: `/category`"""
+    """View function for URL: `/category`
+    Methods: `GET`, `POST`
+    
+    `GET` method arguments
+    ----------------------
+    * type : `int` - filter categories by type
+    
+    `POST` method data
+    ------------------
+    * type : `int` - type of category
+    * name : `str` - name of category (max 50 chars)
+    """
 
     if request.method == "GET":
         api_logger.debug("GET request at %s. Args: %s; Form: %s", request.full_path, request.args, request.form)
@@ -61,7 +72,13 @@ def api_category_all():
 
 
 def api_category(category_id: int):
-    """View function for URL: `/category/<int: category_id>`"""
+    """View function for URL: `/category/<int: category_id>`
+    Methods: `GET`, `PUT`, `DELETE`
+    
+    `PUT` method data
+    ------------------
+    * name : `str` - name of category (max 50 chars)
+    """
 
     if request.method == "GET":
         api_logger.debug("GET request at %s. Args: %s; Form: %s", request.full_path, request.args, request.form)
@@ -115,7 +132,7 @@ def api_category(category_id: int):
 def api_category_clear(category_id: int):
     """View function for URL: `/category/<int: category_id>/operation`
 
-    This endpoint ONLY for deleting all operations within category
+    This endpoint ONLY for deleting all operations within category (`DELETE` method)
     """
 
     if request.method == "DELETE":
@@ -133,7 +150,7 @@ def api_category_clear(category_id: int):
 def api_category_stats():
     """View function for URL: `/category/stats`
 
-    This endpoint ONLY for getting statistics of all categories
+    This endpoint ONLY for getting statistics of all categories (`GET` method)
     """
 
     if request.method == "GET":
