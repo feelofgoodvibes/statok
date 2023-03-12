@@ -2,6 +2,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/feelofgoodvibes/statok/badge.svg?branch=main)](https://coveralls.io/github/feelofgoodvibes/statok?branch=main)
 
 # 💰 Statok | Money Manager
+![image](https://user-images.githubusercontent.com/53279267/224517064-4c96bc1c-8f09-4544-91a6-7d9ce6b40390.png)
 
 Statok - is an application for money management.
 It provides REST API and Web Application, which allows user to manage his budget:
@@ -24,4 +25,4 @@ Before building, make sure you have python>=3.9 and MySQL installed and configur
 7. Run application: `gunicorn "statok_app.app:create_app()"`
 
 **🎉 App is up and running!**
-It is available under address and port, specified inside `gunicorn.conf.py` configuration file (by default it's `http://localhost:5000`)
+It is available at the address and port specified in the `gunicorn.conf.py` configuration file (by default `http://localhost:5000`)
