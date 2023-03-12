@@ -2,6 +2,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/feelofgoodvibes/statok/badge.svg?branch=main)](https://coveralls.io/github/feelofgoodvibes/statok?branch=main)
 
 # 💰 Statok | Money Manager
+
 ![image](https://user-images.githubusercontent.com/53279267/224517064-4c96bc1c-8f09-4544-91a6-7d9ce6b40390.png)
 
 Statok - is an application for money management.
@@ -12,7 +13,23 @@ It provides REST API and Web Application, which allows user to manage his budget
 - View list of all operations and categories;
 - View operations statistics and total avaiable budget;
 
+## Used technologies
+
+#### Main
+
+- [Flask](https://flask.palletsprojects.com) as web framework
+- [MySQL](https://www.mysql.com) as database
+- [SQLAlchemy](https://www.sqlalchemy.org) + [Alembic](https://alembic.sqlalchemy.org) as ORM and migrations management
+- [Pydantic](https://docs.pydantic.dev) as data validator
+
+#### Additional
+
+- [pytest](https://docs.pytest.org) as framework for testing
+- [Travis-CI](https://www.travis-ci.com) as CI/CD
+- [Coveralls.io](https://coveralls.io) + [Coverage](https://coverage.readthedocs.io/en/7.2.1/) as code coverage tracker
+
 ## How to build
+
 Before building, make sure you have python>=3.9 and MySQL installed and configured. Also, It is recommended to build inside separate virtual environment:
 1. Clone repository (`git clone https://github.com/feelofgoodvibes/statok`)
 2. Install dependencies (`pip install -r requirements.txt` or `pip install .`)
